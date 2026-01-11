@@ -17,10 +17,23 @@
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-default);
-            background-size: cover; background-position: center; background-attachment: fixed;
-            color: white; height: 100dvh; width: 100vw;
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; transition: background 0.5s ease;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
+
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
         }
 
         .dashboard {
@@ -41,64 +54,109 @@
             color: white; padding: 16px; border-radius: 20px;
             font-size: 13px; letter-spacing: 2px; cursor: pointer;
             width: 100%; backdrop-filter: blur(15px);
-            margin-bottom: 20px; text-transform: uppercase; transition: 0.3s;
+            margin-bottom: 20px; text-transform: uppercase;
+            transition: 0.3s;
         }
 
-        /* SUCHE */
-        .search-wrapper { width: 100%; margin-bottom: 30px; position: relative; display: flex; align-items: center; }
+        /* SUCHE MIT MIKROFON */
+        .search-wrapper { 
+            width: 100%; 
+            margin-bottom: 30px; 
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
         #search-input {
             width: 100%; padding: 18px 55px 18px 18px;
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            border-radius: 100px; color: white; font-size: 16px; text-align: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px; color: white;
+            font-size: 16px; text-align: center;
             outline: none; backdrop-filter: blur(10px);
         }
-        .voice-btn { position: absolute; right: 15px; background: none; border: none; cursor: pointer; font-size: 20px; color: rgba(255,255,255,0.4); }
-        .voice-btn.active { color: var(--nexus-cyan); text-shadow: 0 0 15px var(--nexus-cyan); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .voice-btn {
+            position: absolute;
+            right: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.4);
+        }
+        .voice-btn.active {
+            color: var(--nexus-cyan);
+            text-shadow: 0 0 15px var(--nexus-cyan);
+            animation: pulse-voice 1.5s infinite;
+        }
+        @keyframes pulse-voice { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* SHORTCUTS */
-        .shortcuts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
+        .shortcuts-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; width: 100%;
+        }
+
         .shortcut {
             background: var(--glass); border: 1px solid var(--glass-border);
             aspect-ratio: 1/1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; border-radius: 22px;
-            text-decoration: none; color: white; font-size: 10px; position: relative;
+            justify-content: center; align-items: center;
+            border-radius: 22px; text-decoration: none;
+            color: white; font-size: 10px; position: relative;
             backdrop-filter: blur(10px);
         }
 
-        .copyright-tag { margin-top: 15px; font-size: 9px; color: rgba(255, 255, 255, 0.2); font-weight: 300; }
-
-        /* OVERLAYS */
-        .overlay-layer {
-            display: none; position: fixed; inset: 0; background: #000; z-index: 1000;
-            flex-direction: column; animation: fadeIn 0.4s ease;
+        .copyright-tag {
+            margin-top: 15px;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 300;
         }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .overlay-header {
-            padding: 15px 20px; background: rgba(0,0,0,0.9);
+        /* KI MODUS */
+        #nexus-overlay {
+            display: none; position: fixed; inset: 0;
+            background: #000; z-index: 1000;
+            flex-direction: column; 
+            animation: nexusIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes nexusIn { from { opacity: 0; filter: blur(20px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
+
+        .nexus-top-bar {
+            padding: 15px 20px; background: rgba(0,0,0,0.8);
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1010;
         }
-        .close-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 12px; cursor: pointer; font-size: 11px; }
+        .nexus-back-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 12px; font-size: 11px; cursor: pointer; }
+        .nexus-status { font-size: 10px; letter-spacing: 3px; color: var(--nexus-cyan); text-shadow: 0 0 10px var(--nexus-cyan); animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
+        /* UNTERE STEUERUNG */
         .bottom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 100; }
         .glass-icon-btn { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); cursor: pointer; }
+        .glass-icon-btn img { width: 22px; height: 22px; opacity: 0.8; }
 
-        /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: rgba(20, 20, 25, 0.95); width: 85%; max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid var(--glass-border); text-align: center; }
         input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 15px; background: #000; border: 1px solid #333; color: white; outline: none; }
+        .preview-box { width: 100%; height: 80px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; background-size: cover; background-position: center; }
     </style>
 </head>
 <body>
+
+    <div class="bg-overlay"></div>
 
     <div class="dashboard" id="main-ui">
         <h1>NEXUS</h1>
         <button class="btn-primary" onclick="toggleNexus(true)">KI-Modus starten</button>
         
         <div class="search-wrapper">
-            <input type="text" id="search-input" placeholder="Suche..." autocomplete="off" onkeydown="if(event.key==='Enter') startSearch(this.value)">
+            <form id="search-form" action="https://www.google.com/search" method="GET" style="width:100%;">
+                <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off">
+            </form>
             <button type="button" class="voice-btn" id="voice-start-btn" onclick="startVoiceSearch()">🎤</button>
         </div>
         
@@ -107,118 +165,143 @@
         <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:9px; letter-spacing:2px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
-    <div id="search-overlay" class="overlay-layer">
-        <div class="overlay-header">
-            <button class="close-btn" onclick="closeSearch()">SCHLIESSEN</button>
-            <div style="font-size:10px; color:var(--nexus-cyan); letter-spacing: 2px;">NEXUS SEARCH</div>
-        </div>
-        <iframe id="search-frame" style="flex:1; border:none; background:white;"></iframe>
+    <div class="bottom-controls">
+        <div class="glass-icon-btn" id="engine-icon-btn" onclick="toggleModal('engineModal', true)"></div>
+        <div class="glass-icon-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
     </div>
 
-    <div id="nexus-overlay" class="overlay-layer">
-        <div class="overlay-header">
-            <button class="close-btn" onclick="toggleNexus(false)">BEENDEN</button>
-            <div style="font-size:10px; color:var(--nexus-cyan); letter-spacing: 2px;">NEXUS AI AKTIV</div>
+    <div id="nexus-overlay">
+        <div class="nexus-top-bar">
+            <button class="nexus-back-btn" onclick="toggleNexus(false)">BEENDEN</button>
+            <div class="nexus-status">NEXUS AI AKTIV</div>
         </div>
         <iframe src="https://softsorf.github.io/Ki-assistent/" style="flex:1; border:none; background:#000;"></iframe>
     </div>
 
-    <div class="bottom-controls">
-        <div class="glass-icon-btn" onclick="toggleModal('engineModal', true)">🌐</div>
-        <div class="glass-icon-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">ATMOSPHÄRE</h3>
+            <div id="bg-preview" class="preview-box"></div>
+            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px;">BILD HOCHLADEN</p>
+            <input type="file" id="bg-file" accept="image/*" onchange="handleFile(this)">
+            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px; margin-top:5px;">ODER BILD-URL</p>
+            <input type="text" id="bg-url-input" placeholder="https://..." oninput="handleUrl(this.value)">
+            <button class="btn-primary" style="margin-top:10px;" onclick="saveBg()">SPEICHERN</button>
+            <button onclick="resetBg()" style="background:none; border:none; color:#ff4444; font-size:10px; cursor:pointer; margin-top:10px;">ZURÜCKSETZEN</button>
+            <p onclick="toggleModal('settingsModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Schließen</p>
+        </div>
     </div>
 
-    <div id="engineModal" class="modal"><div class="modal-content"><h3>SUCHMASCHINE</h3><select id="engine-select"><option value="https://www.bing.com/search?q=">Bing (Empfohlen für In-Page)</option><option value="https://duckduckgo.com/?q=">DuckDuckGo</option><option value="https://www.google.com/search?q=">Google</option></select><button class="btn-primary" onclick="toggleModal('engineModal', false)">OK</button></div></div>
-    
-    <div id="addModal" class="modal"><div class="modal-content"><h3>NEUER LINK</h3><input type="text" id="new-name" placeholder="Name"><input type="text" id="new-url" placeholder="https://..."><button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button><button onclick="toggleModal('addModal', false)" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer;">Abbrechen</button></div></div>
+    <div id="engineModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; font-weight:100;">SUCHMASCHINE</h3>
+            <select id="engine-select" onchange="updateEngine(this.value)">
+                <option value="https://www.google.com/search">Google</option>
+                <option value="https://www.bing.com/search">Bing</option>
+                <option value="https://duckduckgo.com/">DuckDuckGo</option>
+            </select>
+            <button class="btn-primary" style="margin-top:20px;" onclick="toggleModal('engineModal', false)">BESTÄTIGEN</button>
+        </div>
+    </div>
 
-    <div id="settingsModal" class="modal"><div class="modal-content"><h3>HINTERGRUND</h3><input type="text" id="bg-url" placeholder="Bild URL"><button class="btn-primary" onclick="saveBg()">SPEICHERN</button><button onclick="toggleModal('settingsModal', false)" style="background:none; border:none; color:gray; margin-top:10px; cursor:pointer;">Schließen</button></div></div>
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom:20px; font-weight:100;">NEUER LINK</h3>
+            <input type="text" id="new-name" placeholder="Titel">
+            <input type="text" id="new-url" placeholder="https://...">
+            <button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button>
+            <p onclick="toggleModal('addModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Abbrechen</p>
+        </div>
+    </div>
 
     <script>
-        // --- SOUNDS (Web Audio API) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playUINotify(type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            if(type === 'start') { osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); }
-            else { osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(220, audioCtx.currentTime + 0.2); }
-            
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
-        }
+        let links = JSON.parse(localStorage.getItem('nexus_v10')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+        let tempBg = localStorage.getItem('nexus_bg_custom') || "";
+        const engineLogos = {
+            'https://www.google.com/search': 'https://www.google.com/favicon.ico',
+            'https://www.bing.com/search': 'https://www.bing.com/favicon.ico',
+            'https://duckduckgo.com/': 'https://duckduckgo.com/favicon.ico'
+        };
 
-        // --- SUCHE ---
-        function startSearch(query) {
-            if(!query) return;
-            playUINotify('start');
-            const engine = document.getElementById('engine-select').value;
-            document.getElementById('search-frame').src = engine + encodeURIComponent(query);
-            document.getElementById('search-overlay').style.display = 'flex';
-        }
-        function closeSearch() { playUINotify('end'); document.getElementById('search-overlay').style.display = 'none'; }
-
-        // --- GESTEN (Swipe Up) ---
-        let tStart = 0;
-        document.addEventListener('touchstart', e => tStart = e.touches[0].clientY);
-        document.addEventListener('touchend', e => {
-            if (tStart - e.changedTouches[0].clientY > 100) {
-                document.getElementById('search-input').focus();
-            }
-        });
-
-        // --- VOICE ---
+        // --- SPRACHEINGABE MIT AUSGABE ---
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
-            const rec = new SpeechRecognition();
-            rec.lang = 'de-DE';
-            rec.onstart = () => { playUINotify('start'); document.getElementById('voice-start-btn').classList.add('active'); };
-            rec.onresult = (e) => {
-                const text = e.results[0][0].transcript;
-                document.getElementById('search-input').value = text;
+            const synth = window.speechSynthesis;
+
+            if (!SpeechRecognition) {
+                alert("Spracherkennung wird nicht unterstützt.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            const btn = document.getElementById('voice-start-btn');
+            const input = document.getElementById('search-input');
+            const form = document.getElementById('search-form');
+
+            recognition.lang = 'de-DE';
+            recognition.onstart = () => btn.classList.add('active');
+            recognition.onend = () => btn.classList.remove('active');
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+
                 const utter = new SpeechSynthesisUtterance("Hier sind passende Ergebnisse");
                 utter.lang = 'de-DE';
-                utter.onend = () => startSearch(text);
-                window.speechSynthesis.speak(utter);
+                utter.onend = () => form.submit();
+                
+                synth.speak(utter);
+                setTimeout(() => form.submit(), 2000); // Sicherheits-Fallback
             };
-            rec.onend = () => document.getElementById('voice-start-btn').classList.remove('active');
-            rec.start();
+            recognition.start();
         }
 
-        function toggleNexus(show) { 
-            show ? playUINotify('start') : playUINotify('end');
-            document.getElementById('nexus-overlay').style.display = show ? 'flex' : 'none'; 
-        }
-
-        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
-
-        // --- FAVORITEN SPEICHERN ---
-        let links = JSON.parse(localStorage.getItem('nexus_links')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
         function render() {
-            const c = document.getElementById('shortcuts-container'); c.innerHTML = '';
-            links.forEach((l, i) => {
-                c.innerHTML += `<div class="shortcut" onclick="location.href='${l.url}'">🔎<br>${l.name.toUpperCase()}</div>`;
+            const container = document.getElementById('shortcuts-container');
+            container.innerHTML = '';
+            links.forEach((link, i) => {
+                container.innerHTML += `<div class="shortcut"><span onclick="removeLink(${i})" style="position:absolute; top:6px; right:10px; color:#555; cursor:pointer;">×</span><a href="${link.url}" style="text-decoration:none; color:white; display:flex; flex-direction:column; align-items:center;"><div>💎</div><div style="font-weight:bold; font-size:9px; margin-top:4px;">${link.name.toUpperCase()}</div></a></div>`;
             });
-            localStorage.setItem('nexus_links', JSON.stringify(links));
+            localStorage.setItem('nexus_v10', JSON.stringify(links));
         }
-        function saveShortcut() {
-            const n = document.getElementById('new-name').value;
-            const u = document.getElementById('new-url').value;
-            if(n && u) { links.push({name: n, url: u.includes('://') ? u : 'https://' + u}); render(); toggleModal('addModal', false); }
+
+        function updateEngine(url) {
+            document.getElementById('search-form').action = url;
+            localStorage.setItem('nexus_engine', url);
+            document.getElementById('engine-icon-btn').innerHTML = `<img src="${engineLogos[url]}" alt="E">`;
         }
+
+        function handleFile(input) {
+            const reader = new FileReader();
+            reader.onloadend = () => { tempBg = reader.result; document.getElementById('bg-preview').style.backgroundImage = `url('${tempBg}')`; }
+            if (input.files[0]) reader.readAsDataURL(input.files[0]);
+        }
+        function handleUrl(url) { tempBg = url; document.getElementById('bg-preview').style.backgroundImage = `url('${tempBg}')`; }
         function saveBg() {
-            const url = document.getElementById('bg-url').value;
-            if(url) { document.body.style.backgroundImage = `url('${url}')`; localStorage.setItem('nexus_bg', url); }
+            if (tempBg) { localStorage.setItem('nexus_bg_custom', tempBg); document.body.style.backgroundImage = `url('${tempBg}')`; }
             toggleModal('settingsModal', false);
         }
+        function resetBg() {
+            tempBg = ""; localStorage.removeItem('nexus_bg_custom'); document.body.style.backgroundImage = "";
+            document.getElementById('bg-preview').style.backgroundImage = "var(--bg-default)";
+        }
+        function toggleNexus(show) { document.getElementById('nexus-overlay').style.display = show ? 'flex' : 'none'; }
+        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+        function saveShortcut() {
+            const name = document.getElementById('new-name').value;
+            const url = document.getElementById('new-url').value;
+            if(name && url) { links.push({name, url: url.includes('://') ? url : 'https://' + url}); render(); toggleModal('addModal', false); }
+        }
+        function removeLink(i) { links.splice(i, 1); render(); }
 
         window.onload = () => {
             render();
-            if(localStorage.getItem('nexus_bg')) document.body.style.backgroundImage = `url('${localStorage.getItem('nexus_bg')}')`;
-        };
+            const savedBg = localStorage.getItem('nexus_bg_custom');
+            if(savedBg) document.body.style.backgroundImage = `url('${savedBg}')`;
+            const savedEngine = localStorage.getItem('nexus_engine') || 'https://www.google.com/search';
+            document.getElementById('engine-select').value = savedEngine;
+            updateEngine(savedEngine);
+        }
     </script>
 </body>
 </html>
