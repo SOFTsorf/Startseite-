@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meine Startseite | NEXUS</title>
+    <style>
+        /* CSS: Das Design der Seite */
+        :root {
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --accent-color: #4a90e2;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            margin-top: 10vh;
+        }
+
+        /* Suchfeld */
+        .search-box {
+            margin-bottom: 40px;
+        }
+
+        #search-input {
+            width: 70%;
+            padding: 15px 25px;
+            border-radius: 30px;
+            border: 2px solid #444;
+            background: #333;
+            color: white;
+            font-size: 18px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #search-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Verknüpfungen */
+        .shortcuts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .shortcut-card {
+            background: var(--container-bg);
+            padding: 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .shortcut-card:hover {
+            transform: translateY(-5px);
+            background: #3d3d3d;
+        }
+
+        /* KI Modus (NEXUS) */
+        #nexus-section {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+            border: 2px solid var(--accent-color);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        #nexus-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
+        .ai-btn {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Einstellungen */
+        .settings-overlay {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #settings-menu {
+            display: none;
+            background: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        button.gear-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Willkommen bei NEXUS</h1>
+
+        <div class="search-box">
+            <form id="search-form" action="https://www.google.com/search" method="GET">
+                <input type="text" name="q" id="search-input" placeholder="Mit Google suchen..." autofocus>
+            </form>
+        </div>
+
+        <button class="ai-btn" onclick="toggleNexus()">NEXUS KI MODUS</button>
+
+        <div id="nexus-section">
+            <iframe id="nexus-iframe" src="https://softsorf.github.io/Ki-assistent/"></iframe>
+        </div>
+
+        <hr style="width: 100%; border: 0.5px solid #444; margin: 30px 0;">
+
+        <div id="shortcut-list" class="shortcuts">
+            </div>
+        <button onclick="addNewShortcut()" style="background:none; color: gray; border: 1px dashed gray; cursor: pointer; padding: 5px 10px; border-radius: 5px;">+ Link hinzufügen</button>
+    </div>
+
+    <div class="settings-overlay">
+        <div id="settings-menu">
+            <h4>Suchmaschine wählen:</h4>
+            <select id="engine-select" onchange="updateEngine()">
+                <option value="https://www.google.com/search">Google</option>
+                <option value="https://www.bing.com/search">Bing</option>
+                <option value="https://duckduckgo.com/">DuckDuckGo</option>
+            </select>
+        </div>
+        <button class="gear-btn" onclick="toggleSettings()">⚙️</button>
+    </div>
+
+    <script>
+        // --- LOGIK ---
+
+        // 1. Suchmaschine wechseln
+        function updateEngine() {
+            const select = document.getElementById('engine-select');
+            const form = document.getElementById('search-form');
+            const input = document.getElementById('search-input');
+            
+            form.action = select.value;
+            const name = select.options[select.selectedIndex].text;
+            input.placeholder = "Mit " + name + " suchen...";
+            localStorage.setItem('preferredEngine', select.value);
+        }
+
+        // 2. NEXUS Ein/Ausblenden
+        function toggleNexus() {
+            const section = document.getElementById('nexus-section');
+            section.style.display = (section.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // 3. Einstellungen Ein/Ausblenden
+        function toggleSettings() {
+            const menu = document.getElementById('settings-menu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        // 4. Verknüpfungen verwalten (mit Speicherung im Browser)
+        let links = JSON.parse(localStorage.getItem('myShortcuts')) || [
+            { name: 'YouTube', url: 'https://youtube.com' },
+            { name: 'GitHub', url: 'https://github.com' }
+        ];
+
+        function renderShortcuts() {
+            const list = document.getElementById('shortcut-list');
+            list.innerHTML = '';
+            links.forEach((item, index) => {
+                list.innerHTML += `
+                    <div style="position: relative;">
+                        <a href="${item.url}" class="shortcut-card">
+                            <span>${item.name}</span>
+                        </a>
+                        <button onclick="removeShortcut(${index})" style="position:absolute; top:-5px; right:-5px; border-radius:50%; border:none; background:red; color:white; cursor:pointer; font-size:10px;">X</button>
+                    </div>
+                `;
+            });
+            localStorage.setItem('myShortcuts', JSON.stringify(links));
+        }
+
+        function addNewShortcut() {
+            const name = prompt("Name der Seite:");
+            const url = prompt("URL (z.B. https://google.de):");
+            if(name && url) {
+                links.push({name, url});
+                renderShortcuts();
+            }
+        }
+
+        function removeShortcut(index) {
+            links.splice(index, 1);
+            renderShortcuts();
+        }
+
+        // Beim Laden der Seite
+        window.onload = () => {
+            renderShortcuts();
+            const savedEngine = localStorage.getItem('preferredEngine');
+            if(savedEngine) {
+                document.getElementById('engine-select').value = savedEngine;
+                updateEngine();
+            }
+        };
+    </script>
+</body>
+</html>
