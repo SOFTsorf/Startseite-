@@ -3,33 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXUS OS</title>
+    <title>Startseite</title>
     <style>
         :root {
             --nexus-cyan: #00f2ff;
             --bg-dark: #050508;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-strong: rgba(255, 255, 255, 0.15);
         }
 
-        /* Reset & Base */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            background: radial-gradient(circle at center, #101020 0%, #050508 100%);
+            background-color: var(--bg-dark);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
-            /* Nutzt die dynamische Höhe für perfekte Zentrierung auf Handys */
-            height: 100dvh; 
+            height: 100dvh;
             width: 100vw;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            transition: background 0.5s ease;
         }
 
-        /* Der Dashboard-Container ist nun das absolute Zentrum */
+        /* Overlay für dunkleren Hintergrund falls Bild zu hell */
+        .bg-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(16, 16, 32, 0.4) 0%, rgba(5, 5, 8, 0.8) 100%);
+            z-index: -1;
+        }
+
         .dashboard {
             width: 90%;
             max-width: 400px;
@@ -38,6 +47,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            z-index: 10;
         }
 
         h1 {
@@ -51,7 +61,6 @@
             text-transform: uppercase;
         }
 
-        /* Buttons & Inputs */
         .btn-primary {
             background: var(--glass);
             border: 1px solid var(--glass-border);
@@ -65,13 +74,10 @@
             backdrop-filter: blur(15px);
             margin-bottom: 25px;
             text-transform: uppercase;
-            transition: all 0.2s ease;
+            transition: 0.2s;
         }
 
-        .btn-primary:active {
-            background: rgba(255,255,255,0.1);
-            transform: scale(0.98);
-        }
+        .btn-primary:active { transform: scale(0.98); background: var(--glass-strong); }
 
         .search-wrapper { width: 100%; margin-bottom: 35px; }
         #search-input {
@@ -84,14 +90,11 @@
             font-size: 16px;
             text-align: center;
             outline: none;
-            transition: border-color 0.3s;
+            backdrop-filter: blur(5px);
         }
 
-        #search-input:focus {
-            border-color: var(--nexus-cyan);
-        }
+        #search-input:focus { border-color: var(--nexus-cyan); }
 
-        /* Shortcuts Grid */
         .shortcuts-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -103,7 +106,7 @@
             background: var(--glass);
             border: 1px solid var(--glass-border);
             width: 100%;
-            aspect-ratio: 1 / 1; /* Macht die Karten quadratisch */
+            aspect-ratio: 1 / 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -114,11 +117,10 @@
             font-size: 9px;
             letter-spacing: 1px;
             position: relative;
+            backdrop-filter: blur(10px);
         }
 
-        .shortcut i { font-size: 20px; margin-bottom: 8px; }
-
-        /* KI Modus (Neon Glow Fullscreen) */
+        /* KI Modus mit Animation */
         #nexus-overlay {
             display: none;
             position: fixed;
@@ -126,6 +128,12 @@
             background: #000;
             z-index: 1000;
             flex-direction: column;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         #nexus-overlay::before {
@@ -141,7 +149,7 @@
 
         @keyframes pulseGlow {
             0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.9; }
+            50% { opacity: 0.8; }
         }
 
         .back-bar {
@@ -155,19 +163,19 @@
 
         #nexus-iframe { flex: 1; border: none; width: 100%; height: 100%; }
 
-        /* Modals (Einstellungsmenü / Add Link) */
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
         }
         .modal-content {
-            background: #111;
+            background: rgba(20, 20, 25, 0.9);
             width: 85%;
             max-width: 320px;
             padding: 30px;
@@ -176,10 +184,42 @@
             text-align: center;
         }
 
-        .settings-btn { position: fixed; bottom: 25px; right: 25px; opacity: 0.3; font-size: 22px; cursor: pointer; }
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            background: #000;
+            color: white;
+            outline: none;
+        }
+
+        /* Eleganter Glas-Settings Button */
+        .settings-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            cursor: pointer;
+            z-index: 100;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .settings-btn:hover { background: var(--glass-strong); transform: rotate(45deg); }
     </style>
 </head>
 <body>
+
+    <div class="bg-overlay"></div>
 
     <div class="dashboard" id="main-ui">
         <h1>NEXUS</h1>
@@ -192,16 +232,15 @@
             </form>
         </div>
 
-        <div class="shortcuts-grid" id="shortcuts-container">
-            </div>
+        <div class="shortcuts-grid" id="shortcuts-container"></div>
 
-        <button onclick="toggleModal('addModal', true)" style="margin-top:30px; background:none; border:none; color:#444; font-size:10px; letter-spacing:1.5px;">+ LINK HINZUFÜGEN</button>
+        <button onclick="toggleModal('addModal', true)" style="margin-top:30px; background:none; border:none; color:#555; font-size:10px; letter-spacing:1.5px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
     <div id="nexus-overlay">
         <div class="back-bar">
             <button onclick="toggleNexus(false)" style="background:none; border:1px solid #333; color:white; padding:8px 16px; border-radius:10px; font-size:12px;">← DASHBOARD</button>
-            <span style="font-size:10px; letter-spacing:2px; color:var(--nexus-cyan)">NEXUS INTELLIGENCE</span>
+            <span style="font-size:10px; letter-spacing:2px; color:var(--nexus-cyan)">NEXUS AI</span>
         </div>
         <iframe id="nexus-iframe" src="https://softsorf.github.io/Ki-assistent/"></iframe>
     </div>
@@ -211,8 +250,8 @@
     <div id="addModal" class="modal">
         <div class="modal-content">
             <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">NEUER LINK</h3>
-            <input type="text" id="new-name" placeholder="Name" style="width:100%; padding:12px; margin-bottom:12px; border-radius:12px; border:1px solid #222; background:#000; color:white; outline:none;">
-            <input type="text" id="new-url" placeholder="URL (https://...)" style="width:100%; padding:12px; margin-bottom:20px; border-radius:12px; border:1px solid #222; background:#000; color:white; outline:none;">
+            <input type="text" id="new-name" placeholder="Name">
+            <input type="text" id="new-url" placeholder="URL">
             <button class="btn-primary" onclick="saveShortcut()" style="margin:0">SPEICHERN</button>
             <p onclick="toggleModal('addModal', false)" style="color:gray; font-size:11px; margin-top:15px; cursor:pointer;">ABBRECHEN</p>
         </div>
@@ -220,18 +259,23 @@
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">SUCHMASCHINE</h3>
-            <select id="engine-select" onchange="updateEngine()" style="width:100%; padding:12px; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none;">
+            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">EINSTELLUNGEN</h3>
+            <p style="font-size:10px; color:gray; margin-bottom:5px;">HINTERGRUND-BILD (URL)</p>
+            <input type="text" id="bg-url-input" placeholder="https://image-url.jpg">
+            
+            <p style="font-size:10px; color:gray; margin-bottom:5px; margin-top:10px;">SUCHMASCHINE</p>
+            <select id="engine-select" onchange="updateEngine()" style="width:100%; padding:12px; background:#000; color:white; border:1px solid #333; border-radius:12px; outline:none; margin-bottom:20px;">
                 <option value="https://www.google.com/search">Google</option>
                 <option value="https://www.bing.com/search">Bing</option>
                 <option value="https://duckduckgo.com/">DuckDuckGo</option>
             </select>
-            <button class="btn-primary" style="margin-top:25px;" onclick="toggleModal('settingsModal', false)">FERTIG</button>
+            
+            <button class="btn-primary" style="margin:0;" onclick="saveSettings()">SPEICHERN & SCHLIESSEN</button>
         </div>
     </div>
 
     <script>
-        let links = JSON.parse(localStorage.getItem('nexus_links_final')) || [
+        let links = JSON.parse(localStorage.getItem('nexus_links_v4')) || [
             { name: 'NEXUS KI', url: 'https://softsorf.github.io/Ki-assistent/' }
         ];
 
@@ -250,7 +294,7 @@
                 `;
                 container.appendChild(div);
             });
-            localStorage.setItem('nexus_links_final', JSON.stringify(links));
+            localStorage.setItem('nexus_links_v4', JSON.stringify(links));
         }
 
         function toggleNexus(show) {
@@ -266,8 +310,6 @@
                 links.push({name, url: url.includes('://') ? url : 'https://' + url});
                 render();
                 toggleModal('addModal', false);
-                document.getElementById('new-name').value = '';
-                document.getElementById('new-url').value = '';
             }
         }
 
@@ -279,11 +321,30 @@
             localStorage.setItem('nexus_engine', engine);
         }
 
+        function saveSettings() {
+            const bgUrl = document.getElementById('bg-url-input').value;
+            if(bgUrl) {
+                document.body.style.backgroundImage = `url('${bgUrl}')`;
+                localStorage.setItem('nexus_bg', bgUrl);
+            }
+            updateEngine();
+            toggleModal('settingsModal', false);
+        }
+
         window.onload = () => {
             render();
-            const saved = localStorage.getItem('nexus_engine');
-            if(saved) { document.getElementById('engine-select').value = saved; updateEngine(); }
+            const savedBg = localStorage.getItem('nexus_bg');
+            if(savedBg) {
+                document.body.style.backgroundImage = `url('${savedBg}')`;
+                document.getElementById('bg-url-input').value = savedBg;
+            }
+            const savedEngine = localStorage.getItem('nexus_engine');
+            if(savedEngine) {
+                document.getElementById('engine-select').value = savedEngine;
+                updateEngine();
+            }
         }
     </script>
-</body>
+
+    </body>
 </html>
