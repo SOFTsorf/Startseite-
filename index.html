@@ -7,6 +7,8 @@
     <style>
         :root {
             --nexus-cyan: #00f2ff;
+            --alexa-blue: #00caff;
+            --alexa-deep: #004a99;
             --bg-default: radial-gradient(circle at center, #101020 0%, #050508 100%);
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
@@ -23,6 +25,7 @@
             overflow: hidden; transition: 0.5s ease;
         }
 
+        /* DASHBOARD */
         .dashboard {
             width: 90%; max-width: 400px;
             display: flex; flex-direction: column;
@@ -36,7 +39,15 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
 
-        /* SUCHE AUF HAUPTSEITE */
+        .btn-primary {
+            background: var(--glass); border: 1px solid var(--glass-border);
+            color: white; padding: 16px; border-radius: 20px;
+            font-size: 13px; letter-spacing: 2px; cursor: pointer;
+            width: 100%; backdrop-filter: blur(15px);
+            margin-bottom: 20px; text-transform: uppercase; transition: 0.3s;
+        }
+
+        /* SUCHE */
         .search-wrapper { width: 100%; margin-bottom: 30px; position: relative; display: flex; align-items: center; }
         #search-input {
             width: 100%; padding: 18px 55px 18px 18px;
@@ -46,60 +57,62 @@
         }
         .voice-btn { position: absolute; right: 15px; background: none; border: none; cursor: pointer; font-size: 20px; color: rgba(255,255,255,0.4); }
 
+        /* ALEXA VOICE DESIGN */
+        #alexa-bar {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(90deg, transparent, var(--alexa-blue), var(--nexus-cyan), var(--alexa-blue), transparent);
+            background-size: 200% 100%;
+            box-shadow: 0 -10px 30px var(--alexa-blue);
+            z-index: 3000;
+            animation: alexaFlow 2s linear infinite;
+        }
+        @keyframes alexaFlow {
+            0% { background-position: 100% 0%; }
+            100% { background-position: -100% 0%; }
+        }
+
         /* SHORTCUTS */
         .shortcuts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
         .shortcut {
             background: var(--glass); border: 1px solid var(--glass-border);
             aspect-ratio: 1/1; display: flex; flex-direction: column;
             justify-content: center; align-items: center; border-radius: 22px;
-            cursor: pointer; font-size: 10px; backdrop-filter: blur(10px);
+            cursor: pointer; font-size: 10px; backdrop-filter: blur(10px); color: white;
         }
 
-        .copyright-tag { margin-top: 15px; font-size: 9px; color: rgba(255, 255, 255, 0.2); }
-
-        /* OVERLAY SYSTEM */
+        /* OVERLAYS */
         .overlay-layer {
             display: none; position: fixed; inset: 0; background: #000; z-index: 1000;
             flex-direction: column; animation: fadeIn 0.3s ease;
         }
-
         .overlay-header {
             padding: 10px 15px; background: #050508;
             display: flex; flex-direction: column; gap: 10px;
             border-bottom: 1px solid var(--glass-border); z-index: 1010;
         }
-
         .header-top { display: flex; justify-content: space-between; align-items: center; }
-        
-        /* INTEGRIERTE SUCHLEISTE IM BING FENSTER */
         .mini-search {
             width: 100%; display: flex; align-items: center; background: rgba(255,255,255,0.05);
             border-radius: 12px; padding: 5px 15px; border: 1px solid var(--glass-border);
         }
-        .mini-search input { 
-            background: none !important; border: none !important; margin: 0 !important; 
-            text-align: left !important; font-size: 14px !important; padding: 8px !important;
-        }
-
+        .mini-search input { background: none; border: none; color: white; outline: none; padding: 8px; width: 100%; font-size: 14px; }
         .close-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 10px; }
-
-        /* IFRAME TRICK: Schiebt Bing-Suche nach oben */
         .iframe-container { flex: 1; overflow: hidden; position: relative; background: white; }
-        #search-frame { 
-            width: 100%; height: 110%; /* Etwas höher machen */
-            border: none; 
-            margin-top: -60px; /* Hier schieben wir die Bing-Leiste weg */
-        }
+        #search-frame { width: 100%; height: calc(100% + 65px); border: none; margin-top: -65px; }
 
-        .bottom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 100; }
-        .glass-icon-btn { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); cursor: pointer; }
-
+        /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: rgba(20, 20, 25, 0.95); width: 85%; max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid var(--glass-border); text-align: center; }
         input { width: 100%; padding: 14px; margin: 10px 0; border-radius: 15px; background: #000; border: 1px solid #333; color: white; outline: none; }
+        .preview-box { width: 100%; height: 80px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; background-size: cover; background-position: center; }
+
+        .bottom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 100; }
+        .glass-icon-btn { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); cursor: pointer; }
     </style>
 </head>
 <body>
+
+    <div id="alexa-bar"></div>
 
     <div class="dashboard" id="main-ui">
         <h1>NEXUS</h1>
@@ -122,7 +135,6 @@
                 <button class="close-btn" onclick="closeSearch()">BEENDEN</button>
             </div>
             <div class="mini-search">
-                <span style="font-size:14px;">🔍</span>
                 <input type="text" id="inner-search-input" placeholder="Neue Suche..." onkeydown="if(event.key==='Enter') startSearch(this.value)">
             </div>
         </div>
@@ -145,11 +157,31 @@
         <div class="glass-icon-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
     </div>
 
-    <div id="addModal" class="modal"><div class="modal-content"><h3>LINK</h3><input type="text" id="new-name" placeholder="Name"><input type="text" id="new-url" placeholder="https://..."><button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button></div></div>
-    <div id="settingsModal" class="modal"><div class="modal-content"><h3>BG URL</h3><input type="text" id="bg-url" placeholder="https://..."><button class="btn-primary" onclick="saveBg()">OK</button></div></div>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h3>HINTERGRUND</h3>
+            <div id="bg-preview" class="preview-box"></div>
+            <input type="file" id="bg-file" accept="image/*" onchange="handleFile(this)">
+            <input type="text" id="bg-url-input" placeholder="URL einfügen..." oninput="handleUrl(this.value)">
+            <button class="btn-primary" onclick="saveBg()">SPEICHERN</button>
+            <p onclick="toggleModal('settingsModal', false)" style="margin-top:10px; color:gray; cursor:pointer; font-size:11px;">Schließen</p>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3>NEUER LINK</h3>
+            <input type="text" id="new-name" placeholder="Name">
+            <input type="text" id="new-url" placeholder="https://...">
+            <button class="btn-primary" onclick="saveShortcut()">HINZUFÜGEN</button>
+        </div>
+    </div>
 
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let tempBg = "";
+        let links = JSON.parse(localStorage.getItem('nexus_links')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+
         function playBeep() {
             const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
             osc.connect(g); g.connect(audioCtx.destination);
@@ -157,39 +189,63 @@
             osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
 
+        // BACKGROUND
+        function handleFile(input) {
+            const reader = new FileReader();
+            reader.onload = (e) => { tempBg = e.target.result; document.getElementById('bg-preview').style.backgroundImage = `url(${tempBg})`; };
+            if (input.files[0]) reader.readAsDataURL(input.files[0]);
+        }
+        function handleUrl(url) { tempBg = url; document.getElementById('bg-preview').style.backgroundImage = `url(${url})`; }
+        function saveBg() {
+            if(tempBg) { localStorage.setItem('nexus_bg', tempBg); document.body.style.backgroundImage = `url(${tempBg})`; }
+            toggleModal('settingsModal', false);
+        }
+
+        // SEARCH
         function startSearch(query) {
             if(!query) return;
             playBeep();
-            const url = "https://www.bing.com/search?q=" + encodeURIComponent(query);
-            document.getElementById('search-frame').src = url;
+            document.getElementById('search-frame').src = "https://www.bing.com/search?q=" + encodeURIComponent(query);
             document.getElementById('inner-search-input').value = query;
             document.getElementById('search-overlay').style.display = 'flex';
         }
-
         function closeSearch() { document.getElementById('search-overlay').style.display = 'none'; }
 
+        // VOICE WITH ALEXA DESIGN
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
+            
             const rec = new SpeechRecognition();
+            const alexaBar = document.getElementById('alexa-bar');
+            
             rec.lang = 'de-DE';
+            rec.onstart = () => {
+                alexaBar.style.display = 'block'; // Zeige Alexa-Leiste
+                playBeep();
+            };
+            
             rec.onresult = (e) => {
                 const text = e.results[0][0].transcript;
+                alexaBar.style.display = 'none'; // Verstecke Alexa-Leiste
                 const utter = new SpeechSynthesisUtterance("Hier sind passende Ergebnisse");
                 utter.onend = () => startSearch(text);
                 window.speechSynthesis.speak(utter);
             };
+            
+            rec.onerror = () => { alexaBar.style.display = 'none'; };
+            rec.onend = () => { /* Falls kein Ergebnis, Leiste trotzdem weg */ };
+            
             rec.start();
         }
 
         function toggleNexus(s) { document.getElementById('nexus-overlay').style.display = s ? 'flex' : 'none'; }
         function toggleModal(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
-
-        let links = JSON.parse(localStorage.getItem('nexus_links')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+        
         function render() {
             const c = document.getElementById('shortcuts-container'); c.innerHTML = '';
             links.forEach(l => {
-                c.innerHTML += `<div class="shortcut" onclick="location.href='${l.url}'">💎<br>${l.name.toUpperCase()}</div>`;
+                c.innerHTML += `<div class="shortcut" onclick="window.location.href='${l.url}'">💎<br>${l.name.toUpperCase()}</div>`;
             });
             localStorage.setItem('nexus_links', JSON.stringify(links));
         }
@@ -197,18 +253,13 @@
         function saveShortcut() {
             const n = document.getElementById('new-name').value;
             const u = document.getElementById('new-url').value;
-            if(n && u) { links.push({name: n, url: u}); render(); toggleModal('addModal', false); }
-        }
-
-        function saveBg() {
-            const u = document.getElementById('bg-url').value;
-            document.body.style.backgroundImage = `url('${u}')`;
-            localStorage.setItem('nexus_bg', u); toggleModal('settingsModal', false);
+            if(n && u) { links.push({name: n, url: u.includes('://') ? u : 'https://' + u}); render(); toggleModal('addModal', false); }
         }
 
         window.onload = () => {
             render();
-            if(localStorage.getItem('nexus_bg')) document.body.style.backgroundImage = `url('${localStorage.getItem('nexus_bg')}')`;
+            const savedBg = localStorage.getItem('nexus_bg');
+            if(savedBg) document.body.style.backgroundImage = `url(${savedBg})`;
         };
     </script>
 </body>
