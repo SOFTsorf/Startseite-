@@ -200,7 +200,7 @@
         function render() {
             const c = document.getElementById('shortcuts-container'); c.innerHTML = '';
             links.forEach((l, i) => {
-                c.innerHTML += `<div class="shortcut" onclick="location.href='${l.url}'">💎<br>${l.name.toUpperCase()}</div>`;
+                c.innerHTML += `<div class="shortcut" onclick="location.href='${l.url}'">🔎<br>${l.name.toUpperCase()}</div>`;
             });
             localStorage.setItem('nexus_links', JSON.stringify(links));
         }
