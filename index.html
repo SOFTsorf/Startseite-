@@ -71,6 +71,7 @@
             backdrop-filter: blur(15px);
             margin-bottom: 20px;
             text-transform: uppercase;
+            transition: 0.2s;
         }
 
         .search-wrapper { width: 100%; margin-bottom: 30px; }
@@ -110,7 +111,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* KI Animation */
         #nexus-overlay {
             display: none;
             position: fixed;
@@ -121,78 +121,58 @@
             animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        #nexus-overlay::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            border: 2px solid var(--nexus-cyan);
-            box-shadow: inset 0 0 25px var(--nexus-cyan), 0 0 45px var(--nexus-cyan);
-            z-index: 1001;
-        }
-
-        /* Modals */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
             z-index: 2000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: #111;
+            background: rgba(25, 25, 30, 0.95);
             width: 85%;
             max-width: 340px;
             padding: 25px;
-            border-radius: 25px;
+            border-radius: 30px;
             border: 1px solid var(--glass-border);
         }
 
         .settings-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 50px;
-            height: 50px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(15px);
-            cursor: pointer;
+            position: fixed; bottom: 25px; right: 25px; width: 55px; height: 55px;
+            background: var(--glass); border: 1px solid var(--glass-border);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(20px); cursor: pointer; z-index: 100;
         }
 
         input, select {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 10px;
-            background: #000;
-            border: 1px solid #333;
-            color: white;
+            width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px;
+            background: #000; border: 1px solid #333; color: white; outline: none;
+        }
+
+        /* Vorschau-Fenster in den Settings */
+        .preview-container {
+            width: 100%; height: 120px; border-radius: 15px;
+            margin-bottom: 15px; border: 1px solid #333;
+            background-size: cover; background-position: center;
+            background-image: var(--bg-default); display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+            position: relative;
+        }
+        .preview-container::after {
+            content: "VORSCHAU"; font-size: 10px; letter-spacing: 2px;
+            background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 5px;
         }
 
         .reset-btn {
-            background: #331111;
-            color: #ff4444;
-            border: 1px solid #442222;
-            padding: 10px;
-            width: 100%;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 11px;
+            background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.2);
+            padding: 12px; width: 100%; border-radius: 12px; cursor: pointer;
+            margin-top: 15px; font-size: 11px; text-transform: uppercase;
         }
     </style>
 </head>
@@ -209,12 +189,12 @@
             </form>
         </div>
         <div class="shortcuts-grid" id="shortcuts-container"></div>
-        <button onclick="toggleModal('addModal', true)" style="margin-top:20px; background:none; border:none; color:#444; font-size:10px;">+ LINK HINZUFÜGEN</button>
+        <button onclick="toggleModal('addModal', true)" style="margin-top:20px; background:none; border:none; color:#555; font-size:10px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
     <div id="nexus-overlay">
         <div style="padding:15px; background:#000; z-index:1002;">
-            <button onclick="toggleNexus(false)" style="background:none; border:1px solid #333; color:white; padding:8px 15px; border-radius:10px;">← DASHBOARD</button>
+            <button onclick="toggleNexus(false)" style="background:none; border:1px solid #333; color:white; padding:8px 15px; border-radius:10px;">← ZURÜCK</button>
         </div>
         <iframe src="https://softsorf.github.io/Ki-assistent/" style="flex:1; border:none; width:100%;"></iframe>
     </div>
@@ -223,41 +203,35 @@
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:15px; font-weight:100; letter-spacing:2px;">EINSTELLUNGEN</h3>
+            <h3 style="margin-bottom:15px; font-weight:100; letter-spacing:2px; text-align:center;">SETTINGS</h3>
             
-            <p style="font-size:10px; color:gray;">HINTERGRUND ÄNDERN</p>
-            <input type="file" id="bg-file" accept="image/*" onchange="previewFile(this)">
-            <select id="bg-size" onchange="updateBgStyle()">
-                <option value="cover">Ausfüllen (Cover)</option>
-                <option value="contain">Ganzes Bild (Anpassen)</option>
-            </select>
+            <div id="bg-preview" class="preview-container"></div>
 
-            <p style="font-size:10px; color:gray; margin-top:10px;">SUCHMASCHINE</p>
-            <select id="engine-select">
-                <option value="https://www.google.com/search">Google</option>
-                <option value="https://www.bing.com/search">Bing</option>
-                <option value="https://duckduckgo.com/">DuckDuckGo</option>
-            </select>
+            <p style="font-size:10px; color:gray;">BILD HOCHLADEN</p>
+            <input type="file" id="bg-file" accept="image/*" onchange="handleFile(this)">
+            
+            <p style="font-size:10px; color:gray; margin-top:5px;">ODER BILD-URL</p>
+            <input type="text" id="bg-url-input" placeholder="https://..." oninput="handleUrl(this.value)">
 
-            <button class="btn-primary" style="margin-top:15px; padding:10px;" onclick="saveSettings()">SPEICHERN</button>
-            <button class="reset-btn" onclick="resetBg()">HINTERGRUND ZURÜCKSETZEN</button>
-            <p onclick="toggleModal('settingsModal', false)" style="text-align:center; font-size:11px; margin-top:10px; color:gray; cursor:pointer;">Schließen</p>
+            <button class="btn-primary" style="margin-top:10px; padding:12px;" onclick="saveSettings()">BILD ÜBERNEHMEN</button>
+            <button class="reset-btn" onclick="resetBg()">ZURÜCKSETZEN</button>
+            <p onclick="toggleModal('settingsModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Schließen</p>
         </div>
     </div>
 
     <div id="addModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:15px; font-weight:100;">LINK HINZUFÜGEN</h3>
+            <h3 style="margin-bottom:15px; font-weight:100; text-align:center;">LINK HINZUFÜGEN</h3>
             <input type="text" id="new-name" placeholder="Name">
-            <input type="text" id="new-url" placeholder="URL (https://...)">
+            <input type="text" id="new-url" placeholder="URL">
             <button class="btn-primary" onclick="saveShortcut()">HINZUFÜGEN</button>
             <p onclick="toggleModal('addModal', false)" style="text-align:center; font-size:11px; margin-top:10px; color:gray; cursor:pointer;">Abbrechen</p>
         </div>
     </div>
 
     <script>
-        let links = JSON.parse(localStorage.getItem('nexus_links_v6')) || [{name: 'NEXUS KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
-        let bgData = localStorage.getItem('nexus_bg_custom') || "";
+        let links = JSON.parse(localStorage.getItem('nexus_links_v8')) || [{name: 'NEXUS KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+        let tempBg = localStorage.getItem('nexus_bg_custom') || "";
 
         function render() {
             const container = document.getElementById('shortcuts-container');
@@ -265,47 +239,59 @@
             links.forEach((link, i) => {
                 container.innerHTML += `<div class="shortcut">
                     <span onclick="removeLink(${i})" style="position:absolute; top:5px; right:8px; color:#444; cursor:pointer;">×</span>
-                    <a href="${link.url}" style="text-decoration:none; color:white; text-align:center;">
-                        <div style="font-size:20px;">💎</div>
+                    <a href="${link.url}" style="text-decoration:none; color:white; text-align:center; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                        <div style="font-size:20px; margin-bottom:4px;">💎</div>
                         <div style="font-weight:bold; font-size:9px;">${link.name.toUpperCase()}</div>
                     </a>
                 </div>`;
             });
-            localStorage.setItem('nexus_links_v6', JSON.stringify(links));
+            localStorage.setItem('nexus_links_v8', JSON.stringify(links));
         }
 
-        function previewFile(input) {
+        function updatePreview(src) {
+            const preview = document.getElementById('bg-preview');
+            preview.style.backgroundImage = src ? `url('${src}')` : "var(--bg-default)";
+        }
+
+        function handleFile(input) {
             const file = input.files[0];
             const reader = new FileReader();
             reader.onloadend = () => {
-                bgData = reader.result;
-                document.body.style.backgroundImage = `url('${bgData}')`;
+                tempBg = reader.result;
+                updatePreview(tempBg);
             }
             if (file) reader.readAsDataURL(file);
         }
 
-        function updateBgStyle() {
-            document.body.style.backgroundSize = document.getElementById('bg-size').value;
+        function handleUrl(url) {
+            if(url.trim() !== "") {
+                tempBg = url;
+                updatePreview(tempBg);
+            }
         }
 
         function saveSettings() {
-            if (bgData) localStorage.setItem('nexus_bg_custom', bgData);
-            localStorage.setItem('nexus_bg_size', document.getElementById('bg-size').value);
-            const engine = document.getElementById('engine-select').value;
-            localStorage.setItem('nexus_engine', engine);
-            document.getElementById('search-form').action = engine;
+            if (tempBg) {
+                localStorage.setItem('nexus_bg_custom', tempBg);
+                document.body.style.backgroundImage = `url('${tempBg}')`;
+            }
             toggleModal('settingsModal', false);
         }
 
         function resetBg() {
-            bgData = "";
+            tempBg = "";
             localStorage.removeItem('nexus_bg_custom');
-            document.body.style.background = "var(--bg-default)";
-            toggleModal('settingsModal', false);
+            document.body.style.backgroundImage = "";
+            updatePreview("");
+            document.getElementById('bg-url-input').value = "";
+            document.getElementById('bg-file').value = "";
         }
 
         function toggleNexus(show) { document.getElementById('nexus-overlay').style.display = show ? 'flex' : 'none'; }
-        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+        function toggleModal(id, show) { 
+            document.getElementById(id).style.display = show ? 'flex' : 'none';
+            if(id === 'settingsModal' && show) updatePreview(localStorage.getItem('nexus_bg_custom'));
+        }
         
         function saveShortcut() {
             const name = document.getElementById('new-name').value;
@@ -321,17 +307,8 @@
 
         window.onload = () => {
             render();
-            if(bgData) document.body.style.backgroundImage = `url('${bgData}')`;
-            const size = localStorage.getItem('nexus_bg_size');
-            if(size) {
-                document.getElementById('bg-size').value = size;
-                document.body.style.backgroundSize = size;
-            }
-            const engine = localStorage.getItem('nexus_engine');
-            if(engine) {
-                document.getElementById('engine-select').value = engine;
-                document.getElementById('search-form').action = engine;
-            }
+            const saved = localStorage.getItem('nexus_bg_custom');
+            if(saved) document.body.style.backgroundImage = `url('${saved}')`;
         }
     </script>
 </body>
