@@ -84,7 +84,16 @@
             backdrop-filter: blur(10px);
         }
 
-        /* --- ELEGANTER KI MODUS --- */
+        /* COPYRIGHT UNTER FAVORITEN */
+        .copyright-tag {
+            margin-top: 15px;
+            font-size: 9px;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 300;
+        }
+
+        /* --- KI MODUS --- */
         #nexus-overlay {
             display: none; position: fixed; inset: 0;
             background: #000; z-index: 1000;
@@ -95,13 +104,6 @@
         @keyframes nexusIn {
             from { opacity: 0; filter: blur(20px); transform: scale(1.1); }
             to { opacity: 1; filter: blur(0); transform: scale(1); }
-        }
-
-        #nexus-overlay::after {
-            content: ""; position: absolute; inset: 0;
-            pointer-events: none; border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: inset 0 0 50px rgba(0, 242, 255, 0.1);
-            z-index: 1005;
         }
 
         .nexus-top-bar {
@@ -166,14 +168,18 @@
 
     <div class="dashboard" id="main-ui">
         <h1>NEXUS</h1>
-        <button class="btn-primary" onclick="toggleNexus(true)">Initialize AI</button>
+        <button class="btn-primary" onclick="toggleNexus(true)">KI-Modus starten</button>
         <div class="search-wrapper">
             <form id="search-form" action="https://www.google.com/search" method="GET">
-                <input type="text" name="q" id="search-input" placeholder="Neural Search..." autocomplete="off">
+                <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off">
             </form>
         </div>
+        
         <div class="shortcuts-grid" id="shortcuts-container"></div>
-        <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:9px; letter-spacing:2px; cursor:pointer;">+ ADD TERMINAL</button>
+        
+        <div class="copyright-tag">(c) 2026 - by Patrick Roth</div>
+
+        <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:9px; letter-spacing:2px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
     <div class="bottom-controls">
@@ -183,46 +189,50 @@
 
     <div id="nexus-overlay">
         <div class="nexus-top-bar">
-            <button class="nexus-back-btn" onclick="toggleNexus(false)">DISCONNECT</button>
-            <div class="nexus-status">NEXUS CORE ACTIVE</div>
+            <button class="nexus-back-btn" onclick="toggleNexus(false)">BEENDEN</button>
+            <div class="nexus-status">NEXUS CORE AKTIV</div>
         </div>
         <iframe src="https://softsorf.github.io/Ki-assistent/" style="flex:1; border:none; background:#000;"></iframe>
     </div>
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">ATMOSPHERE</h3>
+            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">ATMOSPHÄRE</h3>
             <div id="bg-preview" class="preview-box"></div>
+            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px;">BILD HOCHLADEN</p>
             <input type="file" id="bg-file" accept="image/*" onchange="handleFile(this)">
-            <input type="text" id="bg-url-input" placeholder="Image URL..." oninput="handleUrl(this.value)">
-            <button class="btn-primary" style="margin-top:10px;" onclick="saveBg()">APPLY</button>
-            <button onclick="resetBg()" style="background:none; border:none; color:#ff4444; font-size:10px; cursor:pointer; margin-top:10px;">RESET TO DEFAULT</button>
+            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px; margin-top:5px;">ODER BILD-URL</p>
+            <input type="text" id="bg-url-input" placeholder="https://..." oninput="handleUrl(this.value)">
+            <button class="btn-primary" style="margin-top:10px;" onclick="saveBg()">SPEICHERN</button>
+            <button onclick="resetBg()" style="background:none; border:none; color:#ff4444; font-size:10px; cursor:pointer; margin-top:10px;">ZURÜCKSETZEN</button>
+            <p onclick="toggleModal('settingsModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Schließen</p>
         </div>
     </div>
 
     <div id="engineModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100;">SEARCH ENGINE</h3>
+            <h3 style="margin-bottom:20px; font-weight:100;">SUCHMASCHINE</h3>
             <select id="engine-select" onchange="updateEngine(this.value)">
                 <option value="https://www.google.com/search">Google</option>
                 <option value="https://www.bing.com/search">Bing</option>
                 <option value="https://duckduckgo.com/">DuckDuckGo</option>
             </select>
-            <button class="btn-primary" style="margin-top:20px;" onclick="toggleModal('engineModal', false)">CONFIRM</button>
+            <button class="btn-primary" style="margin-top:20px;" onclick="toggleModal('engineModal', false)">BESTÄTIGEN</button>
         </div>
     </div>
 
     <div id="addModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100;">NEW SHORTCUT</h3>
-            <input type="text" id="new-name" placeholder="Title">
+            <h3 style="margin-bottom:20px; font-weight:100;">NEUER LINK</h3>
+            <input type="text" id="new-name" placeholder="Titel">
             <input type="text" id="new-url" placeholder="https://...">
-            <button class="btn-primary" onclick="saveShortcut()">SAVE</button>
+            <button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button>
+            <p onclick="toggleModal('addModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Abbrechen</p>
         </div>
     </div>
 
     <script>
-        let links = JSON.parse(localStorage.getItem('nexus_v10')) || [{name: 'AI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+        let links = JSON.parse(localStorage.getItem('nexus_v10')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
         let tempBg = localStorage.getItem('nexus_bg_custom') || "";
         const engineLogos = {
             'https://www.google.com/search': 'https://www.google.com/favicon.ico',
@@ -261,13 +271,11 @@
         function resetBg() {
             tempBg = ""; localStorage.removeItem('nexus_bg_custom'); document.body.style.backgroundImage = "";
             document.getElementById('bg-preview').style.backgroundImage = "var(--bg-default)";
+            document.getElementById('bg-url-input').value = "";
+            document.getElementById('bg-file').value = "";
         }
 
-        function toggleNexus(show) { 
-            const ov = document.getElementById('nexus-overlay');
-            ov.style.display = show ? 'flex' : 'none'; 
-        }
-
+        function toggleNexus(show) { document.getElementById('nexus-overlay').style.display = show ? 'flex' : 'none'; }
         function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
         
         function saveShortcut() {
