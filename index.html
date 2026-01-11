@@ -2,326 +2,278 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXUS OS</title>
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-color: #ffffff;
-            --nexus-glow: 0 0 20px rgba(0, 210, 255, 0.6), 0 0 40px rgba(0, 210, 255, 0.2);
+            --nexus-cyan: #00f2ff;
+            --nexus-blue: #0062ff;
+            --bg-dark: #050508;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
-            background: #050505;
-            color: var(--text-color);
+            background: var(--bg-dark);
+            color: white;
             margin: 0;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .main-content {
-            width: 100%;
-            max-width: 900px;
-            padding: 60px 20px;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: filter 0.5s ease;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #101020 0%, #050508 100%);
         }
 
-        /* Hintergrund-Effekt für die Seite */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 10%, #1a1a2e 0%, #050505 100%);
-            z-index: -1;
+        /* Haupt-Container */
+        .dashboard {
+            width: 100%;
+            max-width: 500px;
+            padding: 40px 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            transition: filter 0.4s ease;
         }
 
         h1 {
-            font-weight: 200;
-            letter-spacing: 8px;
-            margin-bottom: 40px;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            font-size: 2.5rem;
+            font-weight: 100;
+            letter-spacing: 12px;
+            margin: 20px 0 40px 0;
+            background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.9;
         }
 
-        /* KI Toggle Button */
-        .ai-btn {
-            background: var(--glass-bg);
+        /* Buttons & Inputs */
+        .btn-primary {
+            background: var(--glass);
             border: 1px solid var(--glass-border);
             color: white;
-            padding: 15px 45px;
-            border-radius: 50px;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-size: 14px;
+            letter-spacing: 2px;
             cursor: pointer;
-            transition: 0.4s;
-            letter-spacing: 3px;
-            font-size: 13px;
-            margin-bottom: 50px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-        }
-
-        .ai-btn:hover {
-            border-color: #00d2ff;
-            box-shadow: var(--nexus-glow);
-            transform: scale(1.05);
-        }
-
-        /* Suchfeld */
-        .search-container {
+            transition: 0.3s;
             width: 100%;
-            max-width: 550px;
-            margin-bottom: 60px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
         }
 
+        .btn-primary:active { transform: scale(0.98); background: rgba(255,255,255,0.1); }
+
+        .search-wrapper { width: 100%; margin-bottom: 40px; }
         #search-input {
             width: 100%;
-            padding: 18px 30px;
-            background: rgba(255,255,255,0.03);
+            padding: 18px 25px;
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--glass-border);
-            border-radius: 100px;
+            border-radius: 20px;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
+            text-align: center;
             outline: none;
             transition: 0.3s;
-            text-align: center;
         }
-
-        #search-input:focus {
-            background: rgba(255,255,255,0.07);
-            border-color: #00d2ff;
-        }
-
-        /* KI MODUS OVERLAY (FAST GANZE SEITE) */
-        #nexus-overlay {
-            display: none;
-            position: fixed;
-            top: 2%;
-            left: 2%;
-            width: 96%;
-            height: 96%;
-            background: #0a0a0a;
-            z-index: 2000;
-            border-radius: 25px;
-            border: 2px solid #00d2ff;
-            box-shadow: var(--nexus-glow);
-            flex-direction: column;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* Zurück Button im KI Modus */
-        .back-bar {
-            width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: flex-start;
-            background: rgba(0,0,0,0.5);
-            border-bottom: 1px solid var(--glass-border);
-            box-sizing: border-box;
-            border-radius: 25px 25px 0 0;
-        }
-
-        .back-btn {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .back-btn:hover {
-            background: white;
-            color: black;
-        }
-
-        #nexus-iframe {
-            flex-grow: 1;
-            width: 100%;
-            border: none;
-            border-radius: 0 0 25px 25px;
-        }
+        #search-input:focus { border-color: var(--nexus-cyan); background: rgba(0,242,255,0.05); }
 
         /* Shortcuts */
         .shortcuts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
             width: 100%;
         }
 
-        .shortcut-item {
-            background: var(--glass-bg);
+        .shortcut {
+            background: var(--glass);
             border: 1px solid var(--glass-border);
-            padding: 20px;
+            padding: 20px 10px;
             border-radius: 20px;
+            text-align: center;
             text-decoration: none;
             color: white;
-            text-align: center;
-            transition: 0.3s;
+            font-size: 11px;
+            letter-spacing: 1px;
             position: relative;
         }
 
-        .shortcut-item:hover {
-            border-color: #00d2ff;
-            background: rgba(255,255,255,0.08);
-        }
+        .shortcut i { font-size: 24px; display: block; margin-bottom: 8px; }
 
-        /* Popups / Modals */
-        .modal {
+        /* KI OVERLAY - ELEGANTE & LEUCHTEND */
+        #nexus-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 3000;
-            justify-content: center;
+            background: #000;
+            z-index: 1000;
+            flex-direction: column;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Pulsierender Neon-Rand */
+        #nexus-overlay::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border: 3px solid var(--nexus-cyan);
+            border-radius: 0;
+            box-shadow: inset 0 0 20px var(--nexus-cyan), 0 0 40px var(--nexus-cyan);
+            z-index: 1001;
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0% { opacity: 0.4; box-shadow: inset 0 0 15px var(--nexus-cyan), 0 0 30px var(--nexus-cyan); }
+            50% { opacity: 1; box-shadow: inset 0 0 25px var(--nexus-cyan), 0 0 60px var(--nexus-cyan); }
+            100% { opacity: 0.4; box-shadow: inset 0 0 15px var(--nexus-cyan), 0 0 30px var(--nexus-cyan); }
+        }
+
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .back-bar {
+            padding: 15px 20px;
+            background: #000;
+            z-index: 1002;
+            display: flex;
             align-items: center;
         }
 
+        #nexus-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+            background: white;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
         .modal-content {
-            background: #151515;
-            padding: 40px;
+            background: #111;
+            width: 100%;
+            max-width: 350px;
+            padding: 30px;
             border-radius: 30px;
-            border: 1px solid #333;
-            width: 320px;
+            border: 1px solid var(--glass-border);
             text-align: center;
         }
 
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #222;
-            color: white;
-            box-sizing: border-box;
-        }
+        .settings-btn { position: fixed; bottom: 30px; right: 30px; opacity: 0.3; font-size: 24px; }
 
-        .settings-icon {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            font-size: 24px;
-            cursor: pointer;
-            opacity: 0.4;
-        }
     </style>
 </head>
 <body>
 
-    <div class="main-content" id="main-ui">
+    <div class="dashboard" id="main-ui">
         <h1>NEXUS</h1>
         
-        <button class="ai-btn" onclick="toggleNexus(true)">KI MODUS STARTEN</button>
+        <button class="btn-primary" onclick="toggleNexus(true)">KI MODUS STARTEN</button>
 
-        <div class="search-container">
+        <div class="search-wrapper">
             <form id="search-form" action="https://www.google.com/search" method="GET">
-                <input type="text" name="q" id="search-input" placeholder="Womit kann ich helfen?" autocomplete="off">
+                <input type="text" name="q" id="search-input" placeholder="Suchen..." autocomplete="off">
             </form>
         </div>
 
         <div class="shortcuts-grid" id="shortcuts-container"></div>
 
-        <button onclick="openModal()" style="margin-top:40px; background:none; border:none; color:#555; cursor:pointer;">+ Link hinzufügen</button>
+        <button onclick="toggleModal('addModal', true)" style="margin-top:30px; background:none; border:none; color:#444; font-size:12px; letter-spacing:1px;">+ LINK HINZUFÜGEN</button>
     </div>
 
     <div id="nexus-overlay">
         <div class="back-bar">
-            <button class="back-btn" onclick="toggleNexus(false)">← Zurück zum Dashboard</button>
+            <button onclick="toggleNexus(false)" style="background:none; border:1px solid #333; color:white; padding:8px 15px; border-radius:10px;">← ZURÜCK</button>
+            <span style="margin-left:15px; font-size:12px; letter-spacing:2px; color:var(--nexus-cyan)">NEXUS INTELLIGENCE</span>
         </div>
         <iframe id="nexus-iframe" src="https://softsorf.github.io/Ki-assistent/"></iframe>
     </div>
 
-    <div class="settings-icon" onclick="toggleSettings(true)">⚙️</div>
-
     <div id="addModal" class="modal">
         <div class="modal-content">
-            <h2 style="font-weight:200;">Neuer Link</h2>
-            <input type="text" id="new-name" placeholder="Name">
-            <input type="text" id="new-url" placeholder="URL (https://...)">
-            <button class="ai-btn" style="margin-top:20px; width:100%;" onclick="saveShortcut()">Speichern</button>
-            <p onclick="openModal(false)" style="color:gray; cursor:pointer; margin-top:15px; font-size:12px;">Abbrechen</p>
+            <h3 style="font-weight:200; margin-bottom:20px;">NEUER LINK</h3>
+            <input type="text" id="new-name" placeholder="Name" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #333; background:#000; color:white;">
+            <input type="text" id="new-url" placeholder="URL" style="width:100%; padding:12px; margin-bottom:20px; border-radius:10px; border:1px solid #333; background:#000; color:white;">
+            <button class="btn-primary" onclick="saveShortcut()" style="margin:0">SPEICHERN</button>
+            <p onclick="toggleModal('addModal', false)" style="margin-top:20px; color:gray; font-size:12px; cursor:pointer;">ABBRECHEN</p>
         </div>
     </div>
 
+    <div class="settings-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
+
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h2 style="font-weight:200;">Settings</h2>
-            <p style="font-size:12px; color:gray;">SUCHMASCHINE</p>
-            <select id="engine-select" onchange="changeEngine()" style="width:100%; padding:10px; border-radius:10px; background:#222; color:white; border:1px solid #333;">
+            <h3 style="font-weight:200;">SETTINGS</h3>
+            <select id="engine-select" onchange="updateEngine()" style="width:100%; padding:12px; background:#000; color:white; border:1px solid #333; border-radius:10px;">
                 <option value="https://www.google.com/search">Google</option>
                 <option value="https://www.bing.com/search">Bing</option>
                 <option value="https://duckduckgo.com/">DuckDuckGo</option>
             </select>
-            <button class="ai-btn" style="margin-top:30px; width:100%;" onclick="toggleSettings(false)">Schließen</button>
+            <button class="btn-primary" style="margin-top:30px;" onclick="toggleModal('settingsModal', false)">FERTIG</button>
         </div>
     </div>
 
     <script>
-        let shortcuts = JSON.parse(localStorage.getItem('nexus_links')) || [
-            { name: 'GitHub', url: 'https://github.com' },
-            { name: 'NEXUS KI', url: 'https://softsorf.github.io/Ki-assistent/' }
+        let links = JSON.parse(localStorage.getItem('nexus_v2_links')) || [
+            { name: 'GITHUB', url: 'https://github.com' }
         ];
 
         function render() {
             const container = document.getElementById('shortcuts-container');
             container.innerHTML = '';
-            shortcuts.forEach((s, i) => {
-                container.innerHTML += `
-                    <div class="shortcut-item">
-                        <span onclick="removeLink(${i})" style="position:absolute; right:10px; top:5px; color:#555; cursor:pointer;">×</span>
-                        <a href="${s.url}" style="text-decoration:none; color:white;">
-                            <div style="font-size:20px; margin-bottom:8px;">💎</div>
-                            <div style="font-size:12px; letter-spacing:1px;">${s.name.toUpperCase()}</div>
-                        </a>
-                    </div>
+            links.forEach((link, i) => {
+                const div = document.createElement('div');
+                div.className = 'shortcut';
+                div.innerHTML = `
+                    <span onclick="removeLink(${i})" style="position:absolute; top:5px; right:8px; color:#444;">×</span>
+                    <a href="${link.url}" style="text-decoration:none; color:white;">
+                        <i>💎</i>
+                        <div>${link.name}</div>
+                    </a>
                 `;
+                container.appendChild(div);
             });
-            localStorage.setItem('nexus_links', JSON.stringify(shortcuts));
+            localStorage.setItem('nexus_v2_links', JSON.stringify(links));
         }
 
-        // KI Modus Toggle
         function toggleNexus(show) {
             const overlay = document.getElementById('nexus-overlay');
-            const main = document.getElementById('main-ui');
             overlay.style.display = show ? 'flex' : 'none';
-            main.style.filter = show ? 'blur(10px)' : 'none';
+            document.getElementById('main-ui').style.filter = show ? 'blur(15px)' : 'none';
         }
 
-        // Modal Handlers
-        function openModal(show = true) { document.getElementById('addModal').style.display = show ? 'flex' : 'none'; }
-        function toggleSettings(show) { document.getElementById('settingsModal').style.display = show ? 'flex' : 'none'; }
+        function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
 
         function saveShortcut() {
             const name = document.getElementById('new-name').value;
             const url = document.getElementById('new-url').value;
             if(name && url) {
-                shortcuts.push({name, url: url.startsWith('http') ? url : 'https://' + url});
+                links.push({name: name.toUpperCase(), url: url.includes('://') ? url : 'https://' + url});
                 render();
-                openModal(false);
-                document.getElementById('new-name').value = '';
-                document.getElementById('new-url').value = '';
+                toggleModal('addModal', false);
             }
         }
 
-        function removeLink(i) {
-            shortcuts.splice(i, 1);
-            render();
-        }
+        function removeLink(i) { links.splice(i, 1); render(); }
 
-        function changeEngine() {
+        function updateEngine() {
             const engine = document.getElementById('engine-select').value;
             document.getElementById('search-form').action = engine;
             localStorage.setItem('nexus_engine', engine);
@@ -329,11 +281,8 @@
 
         window.onload = () => {
             render();
-            const savedEngine = localStorage.getItem('nexus_engine');
-            if(savedEngine) {
-                document.getElementById('engine-select').value = savedEngine;
-                changeEngine();
-            }
+            const saved = localStorage.getItem('nexus_engine');
+            if(saved) { document.getElementById('engine-select').value = saved; updateEngine(); }
         }
     </script>
 </body>
