@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Startseite</title>
+    <title>NEXUS</title>
     <style>
         :root {
             --nexus-cyan: #00f2ff;
@@ -17,23 +17,10 @@
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-default);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: white;
-            height: 100dvh;
-            width: 100vw;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            transition: background 0.5s ease;
-        }
-
-        .bg-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: -1;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: white; height: 100dvh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; transition: 0.5s ease;
         }
 
         .dashboard {
@@ -54,87 +41,45 @@
             color: white; padding: 16px; border-radius: 20px;
             font-size: 13px; letter-spacing: 2px; cursor: pointer;
             width: 100%; backdrop-filter: blur(15px);
-            margin-bottom: 20px; text-transform: uppercase;
-            transition: 0.3s;
+            margin-bottom: 20px; text-transform: uppercase; transition: 0.3s;
         }
 
-        /* SUCHE MIT MIKROFON */
+        /* SUCHE MIT DYNAMISCHEM ICON */
         .search-wrapper { 
-            width: 100%; 
-            margin-bottom: 30px; 
-            position: relative;
-            display: flex;
-            align-items: center;
+            width: 100%; margin-bottom: 30px; position: relative;
+            display: flex; align-items: center;
         }
         #search-input {
             width: 100%; padding: 18px 55px 18px 18px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 100px; color: white;
-            font-size: 16px; text-align: center;
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+            border-radius: 100px; color: white; font-size: 16px; text-align: center;
             outline: none; backdrop-filter: blur(10px);
         }
-        .voice-btn {
-            position: absolute;
-            right: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
+        .action-btn {
+            position: absolute; right: 15px; background: none; border: none;
+            cursor: pointer; font-size: 20px; color: rgba(255,255,255,0.4);
+            display: flex; align-items: center; justify-content: center;
             transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.4);
         }
-        .voice-btn.active {
-            color: var(--nexus-cyan);
-            text-shadow: 0 0 15px var(--nexus-cyan);
-            animation: pulse-voice 1.5s infinite;
-        }
-        @keyframes pulse-voice { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .action-btn.active { color: var(--nexus-cyan); text-shadow: 0 0 15px var(--nexus-cyan); }
 
-        .shortcuts-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 12px; width: 100%;
-        }
-
+        /* SHORTCUTS */
+        .shortcuts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
         .shortcut {
             background: var(--glass); border: 1px solid var(--glass-border);
             aspect-ratio: 1/1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            border-radius: 22px; text-decoration: none;
-            color: white; font-size: 10px; position: relative;
+            justify-content: center; align-items: center; border-radius: 22px;
+            text-decoration: none; color: white; font-size: 10px; position: relative;
             backdrop-filter: blur(10px);
         }
 
-        .copyright-tag {
-            margin-top: 15px;
-            font-size: 9px;
-            letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.2);
-            font-weight: 300;
-        }
+        .copyright-tag { margin-top: 15px; font-size: 14px; color: white; opacity: 0.9; text-align: center; }
 
-        /* KI MODUS */
-        #nexus-overlay {
-            display: none; position: fixed; inset: 0;
-            background: #000; z-index: 1000;
-            flex-direction: column; 
-            animation: nexusIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes nexusIn { from { opacity: 0; filter: blur(20px); transform: scale(1.1); } to { opacity: 1; filter: blur(0); transform: scale(1); } }
-
-        .nexus-top-bar {
-            padding: 15px 20px; background: rgba(0,0,0,0.8);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1010;
-        }
+        /* OVERLAYS & MODALS */
+        #nexus-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; }
+        .nexus-top-bar { padding: 15px 20px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nexus-back-btn { background: var(--glass); border: 1px solid var(--glass-border); color: white; padding: 8px 15px; border-radius: 12px; font-size: 11px; cursor: pointer; }
-        .nexus-status { font-size: 10px; letter-spacing: 3px; color: var(--nexus-cyan); text-shadow: 0 0 10px var(--nexus-cyan); animation: blink 2s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
-
-        /* UNTERE STEUERUNG */
+        
         .bottom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 100; }
         .glass-icon-btn { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); cursor: pointer; }
         .glass-icon-btn img { width: 22px; height: 22px; opacity: 0.8; }
@@ -147,17 +92,15 @@
 </head>
 <body>
 
-    <div class="bg-overlay"></div>
-
-    <div class="dashboard" id="main-ui">
+    <div class="dashboard">
         <h1>NEXUS</h1>
         <button class="btn-primary" onclick="toggleNexus(true)">KI-Modus starten</button>
         
         <div class="search-wrapper">
             <form id="search-form" action="https://www.google.com/search" method="GET" style="width:100%;">
-                <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off">
+                <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off" oninput="toggleSearchIcon()">
             </form>
-            <button type="button" class="voice-btn" id="voice-start-btn" onclick="startVoiceSearch()">🎤</button>
+            <button type="button" class="action-btn" id="search-action-btn" onclick="handleSearchAction()">🎤</button>
         </div>
         
         <div class="shortcuts-grid" id="shortcuts-container"></div>
@@ -173,22 +116,19 @@
     <div id="nexus-overlay">
         <div class="nexus-top-bar">
             <button class="nexus-back-btn" onclick="toggleNexus(false)">BEENDEN</button>
-            <div class="nexus-status">NEXUS AI AKTIV</div>
+            <div style="font-size: 10px; letter-spacing: 3px; color: var(--nexus-cyan);">NEXUS AI AKTIV</div>
         </div>
         <iframe src="https://softsorf.github.io/Ki-assistent/" style="flex:1; border:none; background:#000;"></iframe>
     </div>
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100; letter-spacing:2px;">ATMOSPHÄRE</h3>
+            <h3 style="margin-bottom:20px; font-weight:100;">ATMOSPHÄRE</h3>
             <div id="bg-preview" class="preview-box"></div>
-            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px;">BILD HOCHLADEN</p>
-            <input type="file" id="bg-file" accept="image/*" onchange="handleFile(this)">
-            <p style="font-size:10px; color:gray; text-align:left; margin-left:5px; margin-top:5px;">ODER BILD-URL</p>
-            <input type="text" id="bg-url-input" placeholder="https://..." oninput="handleUrl(this.value)">
-            <button class="btn-primary" style="margin-top:10px;" onclick="saveBg()">SPEICHERN</button>
-            <button onclick="resetBg()" style="background:none; border:none; color:#ff4444; font-size:10px; cursor:pointer; margin-top:10px;">ZURÜCKSETZEN</button>
-            <p onclick="toggleModal('settingsModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Schließen</p>
+            <input type="file" accept="image/*" onchange="handleFile(this)">
+            <input type="text" id="bg-url-input" placeholder="Bild-URL..." oninput="handleUrl(this.value)">
+            <button class="btn-primary" onclick="saveBg()">SPEICHERN</button>
+            <p onclick="toggleModal('settingsModal', false)" style="margin-top:15px; color:gray; cursor:pointer; font-size:11px;">Schließen</p>
         </div>
     </div>
 
@@ -206,11 +146,11 @@
 
     <div id="addModal" class="modal">
         <div class="modal-content">
-            <h3 style="margin-bottom:20px; font-weight:100;">NEUER LINK</h3>
+            <h3>NEUER LINK</h3>
             <input type="text" id="new-name" placeholder="Titel">
             <input type="text" id="new-url" placeholder="https://...">
             <button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button>
-            <p onclick="toggleModal('addModal', false)" style="text-align:center; font-size:11px; margin-top:15px; color:gray; cursor:pointer;">Abbrechen</p>
+            <p onclick="toggleModal('addModal', false)" style="margin-top:15px; color:gray; cursor:pointer; font-size:11px;">Abbrechen</p>
         </div>
     </div>
 
@@ -223,39 +163,47 @@
             'https://duckduckgo.com/': 'https://duckduckgo.com/favicon.ico'
         };
 
-        // --- SPRACHEINGABE MIT AUSGABE ---
+        // --- DYNAMISCHE SUCHE / MIKROFON LOGIK ---
+        function toggleSearchIcon() {
+            const input = document.getElementById('search-input');
+            const btn = document.getElementById('search-action-btn');
+            if (input.value.trim() !== "") {
+                btn.innerHTML = "🔍";
+            } else {
+                btn.innerHTML = "🎤";
+            }
+        }
+
+        function handleSearchAction() {
+            const input = document.getElementById('search-input');
+            if (input.value.trim() !== "") {
+                document.getElementById('search-form').submit();
+            } else {
+                startVoiceSearch();
+            }
+        }
+
         function startVoiceSearch() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const synth = window.speechSynthesis;
-
-            if (!SpeechRecognition) {
-                alert("Spracherkennung wird nicht unterstützt.");
-                return;
-            }
-
+            if (!SpeechRecognition) return;
             const recognition = new SpeechRecognition();
-            const btn = document.getElementById('voice-start-btn');
-            const input = document.getElementById('search-input');
-            const form = document.getElementById('search-form');
-
+            const btn = document.getElementById('search-action-btn');
+            
             recognition.lang = 'de-DE';
             recognition.onstart = () => btn.classList.add('active');
             recognition.onend = () => btn.classList.remove('active');
-
             recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
-                input.value = transcript;
-
+                document.getElementById('search-input').value = transcript;
+                toggleSearchIcon();
                 const utter = new SpeechSynthesisUtterance("Hier sind passende Ergebnisse");
-                utter.lang = 'de-DE';
-                utter.onend = () => form.submit();
-                
-                synth.speak(utter);
-                setTimeout(() => form.submit(), 2000); // Sicherheits-Fallback
+                window.speechSynthesis.speak(utter);
+                setTimeout(() => document.getElementById('search-form').submit(), 1500);
             };
             recognition.start();
         }
 
+        // --- DASHBOARD LOGIK ---
         function render() {
             const container = document.getElementById('shortcuts-container');
             container.innerHTML = '';
@@ -281,16 +229,12 @@
             if (tempBg) { localStorage.setItem('nexus_bg_custom', tempBg); document.body.style.backgroundImage = `url('${tempBg}')`; }
             toggleModal('settingsModal', false);
         }
-        function resetBg() {
-            tempBg = ""; localStorage.removeItem('nexus_bg_custom'); document.body.style.backgroundImage = "";
-            document.getElementById('bg-preview').style.backgroundImage = "var(--bg-default)";
-        }
         function toggleNexus(show) { document.getElementById('nexus-overlay').style.display = show ? 'flex' : 'none'; }
         function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
         function saveShortcut() {
             const name = document.getElementById('new-name').value;
             const url = document.getElementById('new-url').value;
-            if(name && url) { links.push({name, url: url.includes('://') ? url : 'https://' + url}); render(); toggleModal('addModal', false); }
+            if(name && url) { links.push({name, url: url.includes('://') ? url : 'https://' + u}); render(); toggleModal('addModal', false); }
         }
         function removeLink(i) { links.splice(i, 1); render(); }
 
