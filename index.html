@@ -6,17 +6,16 @@
     <title>NEXUS Dashboard</title>
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --glass-bg: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
             --text-color: #ffffff;
-            --accent: #00d2ff;
+            --nexus-glow: 0 0 20px rgba(0, 210, 255, 0.6), 0 0 40px rgba(0, 210, 255, 0.2);
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f0f0f;
-            background-image: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0f0f0f 100%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #050505;
             color: var(--text-color);
             margin: 0;
             display: flex;
@@ -28,73 +27,137 @@
         .main-content {
             width: 100%;
             max-width: 900px;
-            padding: 40px 20px;
+            padding: 60px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: filter 0.5s ease;
         }
 
-        /* Titel & KI Button */
+        /* Hintergrund-Effekt für die Seite */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 10%, #1a1a2e 0%, #050505 100%);
+            z-index: -1;
+        }
+
         h1 {
             font-weight: 200;
-            letter-spacing: 4px;
-            margin-bottom: 30px;
-            opacity: 0.8;
+            letter-spacing: 8px;
+            margin-bottom: 40px;
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
 
-        .ai-toggle-btn {
+        /* KI Toggle Button */
+        .ai-btn {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
             color: white;
-            padding: 12px 40px;
+            padding: 15px 45px;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-bottom: 40px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            transition: 0.4s;
+            letter-spacing: 3px;
+            font-size: 13px;
+            margin-bottom: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
         }
 
-        .ai-toggle-btn:hover {
-            background: var(--primary-gradient);
-            transform: translateY(-2px);
+        .ai-btn:hover {
+            border-color: #00d2ff;
+            box-shadow: var(--nexus-glow);
+            transform: scale(1.05);
         }
 
         /* Suchfeld */
         .search-container {
             width: 100%;
-            max-width: 600px;
-            position: relative;
+            max-width: 550px;
             margin-bottom: 60px;
         }
 
         #search-input {
             width: 100%;
             padding: 18px 30px;
-            background: var(--glass-bg);
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--glass-border);
             border-radius: 100px;
             color: white;
             font-size: 18px;
-            backdrop-filter: blur(10px);
             outline: none;
             transition: 0.3s;
-            box-sizing: border-box;
+            text-align: center;
         }
 
         #search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+            background: rgba(255,255,255,0.07);
+            border-color: #00d2ff;
+        }
+
+        /* KI MODUS OVERLAY (FAST GANZE SEITE) */
+        #nexus-overlay {
+            display: none;
+            position: fixed;
+            top: 2%;
+            left: 2%;
+            width: 96%;
+            height: 96%;
+            background: #0a0a0a;
+            z-index: 2000;
+            border-radius: 25px;
+            border: 2px solid #00d2ff;
+            box-shadow: var(--nexus-glow);
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Zurück Button im KI Modus */
+        .back-bar {
+            width: 100%;
+            padding: 15px;
+            display: flex;
+            justify-content: flex-start;
+            background: rgba(0,0,0,0.5);
+            border-bottom: 1px solid var(--glass-border);
+            box-sizing: border-box;
+            border-radius: 25px 25px 0 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: black;
+        }
+
+        #nexus-iframe {
+            flex-grow: 1;
+            width: 100%;
+            border: none;
+            border-radius: 0 0 25px 25px;
         }
 
         /* Shortcuts */
         .shortcuts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 20px;
             width: 100%;
         }
 
@@ -107,142 +170,102 @@
             color: white;
             text-align: center;
             transition: 0.3s;
-            backdrop-filter: blur(5px);
             position: relative;
         }
 
         .shortcut-item:hover {
-            background: rgba(255,255,255,0.15);
-            transform: scale(1.05);
+            border-color: #00d2ff;
+            background: rgba(255,255,255,0.08);
         }
 
-        .delete-btn {
-            position: absolute;
-            top: 5px;
-            right: 8px;
-            opacity: 0;
-            cursor: pointer;
-            color: #ff4d4d;
-            transition: 0.2s;
-        }
-
-        .shortcut-item:hover .delete-btn { opacity: 1; }
-
-        /* KI Iframe */
-        #nexus-window {
-            display: none;
-            width: 100%;
-            height: 60vh;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-top: 20px;
-            border: 1px solid var(--glass-border);
-        }
-
-        #nexus-iframe { width: 100%; height: 100%; border: none; }
-
-        /* MODERNES POPUP (MODAL) */
+        /* Popups / Modals */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: #222;
-            padding: 30px;
-            border-radius: 24px;
-            width: 300px;
+            background: #151515;
+            padding: 40px;
+            border-radius: 30px;
+            border: 1px solid #333;
+            width: 320px;
             text-align: center;
-            border: 1px solid var(--glass-border);
         }
 
         .modal-content input {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #444;
-            background: #333;
+            border-radius: 10px;
+            border: 1px solid #333;
+            background: #222;
             color: white;
             box-sizing: border-box;
         }
 
-        .modal-btn {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        /* Einstellungen */
-        .settings-trigger {
+        .settings-icon {
             position: fixed;
             bottom: 30px;
-            left: 30px;
+            right: 30px;
+            font-size: 24px;
             cursor: pointer;
-            opacity: 0.5;
-            transition: 0.3s;
+            opacity: 0.4;
         }
-        .settings-trigger:hover { opacity: 1; }
-
     </style>
 </head>
 <body>
 
-    <div class="main-content">
+    <div class="main-content" id="main-ui">
         <h1>NEXUS</h1>
         
-        <button class="ai-toggle-btn" onclick="toggleNexus()">KI Modus Aktivieren</button>
-
-        <div id="nexus-window">
-            <iframe id="nexus-iframe" src="https://softsorf.github.io/Ki-assistent/"></iframe>
-        </div>
+        <button class="ai-btn" onclick="toggleNexus(true)">KI MODUS STARTEN</button>
 
         <div class="search-container">
             <form id="search-form" action="https://www.google.com/search" method="GET">
-                <input type="text" name="q" id="search-input" placeholder="Suche eingeben..." autocomplete="off">
+                <input type="text" name="q" id="search-input" placeholder="Womit kann ich helfen?" autocomplete="off">
             </form>
         </div>
 
-        <div class="shortcuts-grid" id="shortcuts-container">
-            </div>
+        <div class="shortcuts-grid" id="shortcuts-container"></div>
 
-        <div style="margin-top: 40px;">
-            <button onclick="openModal()" style="background:none; border: 1px solid gray; color: gray; padding: 8px 15px; border-radius: 20px; cursor: pointer;">+ Add Link</button>
-        </div>
+        <button onclick="openModal()" style="margin-top:40px; background:none; border:none; color:#555; cursor:pointer;">+ Link hinzufügen</button>
     </div>
 
-    <div class="settings-trigger" onclick="toggleSettingsModal()">⚙️</div>
+    <div id="nexus-overlay">
+        <div class="back-bar">
+            <button class="back-btn" onclick="toggleNexus(false)">← Zurück zum Dashboard</button>
+        </div>
+        <iframe id="nexus-iframe" src="https://softsorf.github.io/Ki-assistent/"></iframe>
+    </div>
+
+    <div class="settings-icon" onclick="toggleSettings(true)">⚙️</div>
 
     <div id="addModal" class="modal">
         <div class="modal-content">
-            <h3>Neuer Link</h3>
-            <input type="text" id="new-name" placeholder="Name (z.B. YouTube)">
+            <h2 style="font-weight:200;">Neuer Link</h2>
+            <input type="text" id="new-name" placeholder="Name">
             <input type="text" id="new-url" placeholder="URL (https://...)">
-            <button class="modal-btn" onclick="saveShortcut()">Hinzufügen</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:gray; cursor:pointer; display:block; margin: 10px auto;">Abbrechen</button>
+            <button class="ai-btn" style="margin-top:20px; width:100%;" onclick="saveShortcut()">Speichern</button>
+            <p onclick="openModal(false)" style="color:gray; cursor:pointer; margin-top:15px; font-size:12px;">Abbrechen</p>
         </div>
     </div>
 
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h3>Einstellungen</h3>
-            <p>Suchmaschine:</p>
-            <select id="engine-select" onchange="changeEngine()" style="width:100%; padding:10px; border-radius:8px; background:#333; color:white;">
+            <h2 style="font-weight:200;">Settings</h2>
+            <p style="font-size:12px; color:gray;">SUCHMASCHINE</p>
+            <select id="engine-select" onchange="changeEngine()" style="width:100%; padding:10px; border-radius:10px; background:#222; color:white; border:1px solid #333;">
                 <option value="https://www.google.com/search">Google</option>
                 <option value="https://www.bing.com/search">Bing</option>
                 <option value="https://duckduckgo.com/">DuckDuckGo</option>
             </select>
-            <button class="modal-btn" onclick="toggleSettingsModal()">Fertig</button>
+            <button class="ai-btn" style="margin-top:30px; width:100%;" onclick="toggleSettings(false)">Schließen</button>
         </div>
     </div>
 
@@ -258,10 +281,10 @@
             shortcuts.forEach((s, i) => {
                 container.innerHTML += `
                     <div class="shortcut-item">
-                        <span class="delete-btn" onclick="removeLink(${i})">×</span>
+                        <span onclick="removeLink(${i})" style="position:absolute; right:10px; top:5px; color:#555; cursor:pointer;">×</span>
                         <a href="${s.url}" style="text-decoration:none; color:white;">
-                            <div style="font-size:24px; margin-bottom:5px;">🌐</div>
-                            <div style="font-size:12px; font-weight:bold;">${s.name}</div>
+                            <div style="font-size:20px; margin-bottom:8px;">💎</div>
+                            <div style="font-size:12px; letter-spacing:1px;">${s.name.toUpperCase()}</div>
                         </a>
                     </div>
                 `;
@@ -269,13 +292,17 @@
             localStorage.setItem('nexus_links', JSON.stringify(shortcuts));
         }
 
-        // Modal Logik
-        function openModal() { document.getElementById('addModal').style.display = 'flex'; }
-        function closeModal() { document.getElementById('addModal').style.display = 'none'; }
-        function toggleSettingsModal() { 
-            const m = document.getElementById('settingsModal');
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+        // KI Modus Toggle
+        function toggleNexus(show) {
+            const overlay = document.getElementById('nexus-overlay');
+            const main = document.getElementById('main-ui');
+            overlay.style.display = show ? 'flex' : 'none';
+            main.style.filter = show ? 'blur(10px)' : 'none';
         }
+
+        // Modal Handlers
+        function openModal(show = true) { document.getElementById('addModal').style.display = show ? 'flex' : 'none'; }
+        function toggleSettings(show) { document.getElementById('settingsModal').style.display = show ? 'flex' : 'none'; }
 
         function saveShortcut() {
             const name = document.getElementById('new-name').value;
@@ -283,7 +310,7 @@
             if(name && url) {
                 shortcuts.push({name, url: url.startsWith('http') ? url : 'https://' + url});
                 render();
-                closeModal();
+                openModal(false);
                 document.getElementById('new-name').value = '';
                 document.getElementById('new-url').value = '';
             }
@@ -294,18 +321,12 @@
             render();
         }
 
-        function toggleNexus() {
-            const win = document.getElementById('nexus-window');
-            win.style.display = (win.style.display === 'block') ? 'none' : 'block';
-        }
-
         function changeEngine() {
             const engine = document.getElementById('engine-select').value;
             document.getElementById('search-form').action = engine;
             localStorage.setItem('nexus_engine', engine);
         }
 
-        // Initialisierung
         window.onload = () => {
             render();
             const savedEngine = localStorage.getItem('nexus_engine');
