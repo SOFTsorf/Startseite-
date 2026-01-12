@@ -61,16 +61,14 @@
             display: flex; align-items: center; justify-content: center; transition: 0.3s;
         }
 
-        /* VERLAUF DROPBOX */
         #history-box {
             display: none; position: absolute; top: 110%; left: 0; width: 100%;
-            background: rgba(15, 15, 20, 0.95); backdrop-filter: blur(20px);
+            background: rgba(15, 15, 20, 0.98); backdrop-filter: blur(25px);
             border-radius: 20px; border: 1px solid var(--glass-border);
-            max-height: 250px; overflow-y: auto; text-align: left;
+            max-height: 250px; overflow-y: auto; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .history-item { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 14px; color: #ccc; transition: 0.2s; }
-        .history-item:hover { background: rgba(255,255,255,0.05); color: var(--nexus-cyan); }
-        .history-footer { padding: 10px; text-align: center; font-size: 10px; color: #ff4444; cursor: pointer; letter-spacing: 1px; }
+        .history-item { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; font-size: 14px; color: #ccc; }
+        .history-footer { padding: 12px; text-align: center; font-size: 10px; color: #ff4444; cursor: pointer; letter-spacing: 1px; font-weight: bold; }
 
         /* SHORTCUTS */
         .shortcuts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
@@ -81,16 +79,22 @@
             text-decoration: none; color: white; font-size: 10px; position: relative;
             backdrop-filter: blur(10px);
         }
+        .remove-lnk { position: absolute; top: 8px; right: 10px; color: rgba(255,255,255,0.2); font-size: 14px; cursor: pointer; }
 
         .copyright-tag { margin-top: 15px; font-size: 14px; color: white; opacity: 0.9; text-align: center; }
 
-        /* MODALS & OVERLAYS */
+        /* OVERLAYS */
+        #nexus-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; flex-direction: column; }
+        .nexus-top-bar { padding: 15px 20px; background: rgba(0,0,0,0.8); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* MODALS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: rgba(20, 20, 25, 0.95); width: 85%; max-width: 340px; padding: 30px; border-radius: 35px; border: 1px solid var(--glass-border); text-align: center; }
         input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 15px; background: #000; border: 1px solid #333; color: white; outline: none; }
         
         .bottom-controls { position: fixed; bottom: 30px; right: 30px; display: flex; gap: 12px; z-index: 50; }
         .glass-icon-btn { width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 50%; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); cursor: pointer; }
+        .glass-icon-btn img { width: 20px; height: 20px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -102,7 +106,7 @@
         <div class="search-container">
             <div class="search-wrapper">
                 <form id="search-form" action="https://www.google.com/search" method="GET" style="width:100%;">
-                    <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off" oninput="handleTyping()" onfocus="showHistoryIfNotEmpty()">
+                    <input type="text" name="q" id="search-input" placeholder="Suche..." autocomplete="off" oninput="handleTyping()" onfocus="showHistory()">
                 </form>
                 <button type="button" class="action-btn" id="search-action-btn" onclick="handleSearchAction()">🎤</button>
             </div>
@@ -117,115 +121,93 @@
         <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:9px; letter-spacing:2px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
-    <div id="warnModal" class="modal">
-        <div class="modal-content">
-            <h3 style="color:#ff4444; margin-bottom:10px;">ACHTUNG</h3>
-            <p style="font-size:13px; color:#ccc; margin-bottom:20px;">Möchtest du deinen Suchverlauf wirklich unwiderruflich löschen?</p>
-            <button class="btn-primary" style="background:#ff4444; border:none;" onclick="clearHistory()">JA, LÖSCHEN</button>
-            <p onclick="toggleModal('warnModal', false)" style="margin-top:15px; color:gray; cursor:pointer; font-size:12px;">ABBRECHEN</p>
-        </div>
+    <div id="warnModal" class="modal"><div class="modal-content"><h3 style="color:#ff4444; margin-bottom:10px;">ACHTUNG</h3><p style="font-size:13px; color:#ccc; margin-bottom:20px;">Verlauf wirklich löschen?</p><button class="btn-primary" style="background:#ff4444; border:none;" onclick="clearHistory()">LÖSCHEN</button><p onclick="toggleModal('warnModal', false)" style="margin-top:15px; color:gray; cursor:pointer;">ABBRECHEN</p></div></div>
+    <div id="settingsModal" class="modal"><div class="modal-content"><h3>ATMOSPHÄRE</h3><input type="text" id="bg-url-input" placeholder="Bild-URL..."><button class="btn-primary" onclick="saveBg()">SPEICHERN</button><button onclick="resetBg()" style="color:#ff4444; background:none; border:none; margin-top:10px; cursor:pointer;">BILD ENTFERNEN</button><p onclick="toggleModal('settingsModal', false)" style="margin-top:10px; cursor:pointer; color:gray;">Schließen</p></div></div>
+    <div id="engineModal" class="modal"><div class="modal-content"><h3>SUCHMASCHINE</h3><select id="engine-select" onchange="updateEngine(this.value)"><option value="https://www.google.com/search">Google</option><option value="https://www.bing.com/search">Bing</option><option value="https://duckduckgo.com/">DuckDuckGo</option></select><button class="btn-primary" onclick="toggleModal('engineModal', false)">OK</button></div></div>
+    <div id="addModal" class="modal"><div class="modal-content"><h3>LINK</h3><input type="text" id="new-name" placeholder="Name"><input type="text" id="new-url" placeholder="https://..."><button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button></div></div>
+
+    <div id="nexus-overlay">
+        <div class="nexus-top-bar"><button onclick="toggleNexus(false)" style="background:var(--glass); border:1px solid var(--glass-border); color:white; padding:8px 15px; border-radius:12px; cursor:pointer;">BEENDEN</button><div style="font-size:10px; color:var(--nexus-cyan);">NEXUS AI AKTIV</div></div>
+        <iframe src="https://softsorf.github.io/Ki-assistent/" style="flex:1; border:none; background:#000;"></iframe>
     </div>
 
-    <div id="settingsModal" class="modal"><div class="modal-content"><h3>HINTERGRUND</h3><input type="text" id="bg-url-input" placeholder="Bild-URL..."><button class="btn-primary" onclick="saveBg()">SPEICHERN</button><button onclick="resetBg()" style="color:#ff4444; background:none; border:none; margin-top:10px; cursor:pointer;">RESET</button></div></div>
-    <div id="addModal" class="modal"><div class="modal-content"><h3>LINK</h3><input type="text" id="new-name" placeholder="Titel"><input type="text" id="new-url" placeholder="URL"><button class="btn-primary" onclick="saveShortcut()">SPEICHERN</button></div></div>
-
     <div class="bottom-controls">
+        <div class="glass-icon-btn" id="engine-btn" onclick="toggleModal('engineModal', true)"></div>
         <div class="glass-icon-btn" onclick="toggleModal('settingsModal', true)">⚙️</div>
     </div>
 
     <script>
         let searchHistory = JSON.parse(localStorage.getItem('nexus_history')) || [];
         let links = JSON.parse(localStorage.getItem('nexus_v10')) || [{name: 'KI', url: 'https://softsorf.github.io/Ki-assistent/'}];
+        const logos = {'https://www.google.com/search': 'https://www.google.com/favicon.ico', 'https://www.bing.com/search': 'https://www.bing.com/favicon.ico', 'https://duckduckgo.com/': 'https://duckduckgo.com/favicon.ico'};
 
         function handleTyping() {
             const input = document.getElementById('search-input');
-            const btn = document.getElementById('search-action-btn');
-            const historyBox = document.getElementById('history-box');
-            
-            btn.innerHTML = input.value.trim() !== "" ? "🔍" : "🎤";
-            
-            if(input.value.length > 0) {
-                renderHistory(input.value);
-            } else {
-                historyBox.style.display = 'none';
-            }
+            document.getElementById('search-action-btn').innerHTML = input.value.trim() !== "" ? "🔍" : "🎤";
+            renderHistory(input.value);
         }
 
-        function showHistoryIfNotEmpty() {
-            if(searchHistory.length > 0) renderHistory("");
-        }
+        function showHistory() { if(searchHistory.length > 0) renderHistory(document.getElementById('search-input').value); }
 
         function renderHistory(filter) {
             const box = document.getElementById('history-box');
             const list = document.getElementById('history-items');
             const filtered = searchHistory.filter(h => h.toLowerCase().includes(filter.toLowerCase())).reverse();
-            
             if(filtered.length > 0) {
                 list.innerHTML = filtered.slice(0, 5).map(h => `<div class="history-item" onclick="applyHistory('${h}')">🕒 ${h}</div>`).join('');
                 box.style.display = 'block';
-            } else {
-                box.style.display = 'none';
-            }
+            } else { box.style.display = 'none'; }
         }
 
-        function applyHistory(val) {
-            document.getElementById('search-input').value = val;
-            handleSearchAction();
-        }
+        function applyHistory(v) { document.getElementById('search-input').value = v; handleSearchAction(); }
 
         function handleSearchAction() {
-            const input = document.getElementById('search-input');
-            const query = input.value.trim();
-            if (query !== "") {
-                addToHistory(query);
+            const q = document.getElementById('search-input').value.trim();
+            if(q !== "") {
+                if(!searchHistory.includes(q)) { searchHistory.push(q); if(searchHistory.length > 15) searchHistory.shift(); localStorage.setItem('nexus_history', JSON.stringify(searchHistory)); }
                 document.getElementById('search-form').submit();
-            } else {
-                startVoiceSearch();
-            }
+            } else { startVoiceSearch(); }
         }
 
-        function addToHistory(q) {
-            if(!searchHistory.includes(q)) {
-                searchHistory.push(q);
-                if(searchHistory.length > 20) searchHistory.shift();
-                localStorage.setItem('nexus_history', JSON.stringify(searchHistory));
-            }
-        }
-
-        function clearHistory() {
-            searchHistory = [];
-            localStorage.removeItem('nexus_history');
-            document.getElementById('history-box').style.display = 'none';
-            toggleModal('warnModal', false);
-        }
+        function clearHistory() { searchHistory = []; localStorage.removeItem('nexus_history'); document.getElementById('history-box').style.display = 'none'; toggleModal('warnModal', false); }
 
         function startVoiceSearch() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
-            const rec = new SpeechRecognition();
-            rec.lang = 'de-DE';
-            rec.onresult = (e) => {
-                const text = e.results[0][0].transcript;
-                document.getElementById('search-input').value = text;
-                handleSearchAction();
-            };
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if(!SR) return;
+            const rec = new SR(); rec.lang = 'de-DE';
+            rec.onresult = (e) => { document.getElementById('search-input').value = e.results[0][0].transcript; handleSearchAction(); };
             rec.start();
         }
 
-        // Standard Funktionen
-        function toggleModal(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
-        function saveBg() { const u = document.getElementById('bg-url-input').value; if(u) { localStorage.setItem('nexus_bg_custom', u); document.body.style.backgroundImage = `url(${u})`; toggleModal('settingsModal', false); } }
-        function resetBg() { localStorage.removeItem('nexus_bg_custom'); document.body.style.backgroundImage = ""; toggleModal('settingsModal', false); }
-        
+        function updateEngine(url) {
+            document.getElementById('search-form').action = url;
+            localStorage.setItem('nexus_engine', url);
+            document.getElementById('engine-btn').innerHTML = `<img src="${logos[url]}">`;
+        }
+
         function renderLinks() {
             const c = document.getElementById('shortcuts-container');
-            c.innerHTML = links.map((l, i) => `<div class="shortcut" onclick="location.href='${l.url}'">💎<br>${l.name.toUpperCase()}</div>`).join('');
+            c.innerHTML = links.map((l, i) => `<div class="shortcut"><span class="remove-lnk" onclick="removeLink(event, ${i})">×</span><div onclick="location.href='${l.url}'" style="text-align:center;">💎<br>${l.name.toUpperCase()}</div></div>`).join('');
+            localStorage.setItem('nexus_v10', JSON.stringify(links));
         }
+
+        function saveShortcut() {
+            const n = document.getElementById('new-name').value, u = document.getElementById('new-url').value;
+            if(n && u) { links.push({name: n, url: u.includes('://') ? u : 'https://' + u}); renderLinks(); toggleModal('addModal', false); }
+        }
+
+        function removeLink(e, i) { e.stopPropagation(); links.splice(i, 1); renderLinks(); }
+        function saveBg() { const u = document.getElementById('bg-url-input').value; localStorage.setItem('nexus_bg_custom', u); document.body.style.backgroundImage = `url(${u})`; toggleModal('settingsModal', false); }
+        function resetBg() { localStorage.removeItem('nexus_bg_custom'); document.body.style.backgroundImage = ""; toggleModal('settingsModal', false); }
+        function toggleNexus(s) { document.getElementById('nexus-overlay').style.display = s ? 'flex' : 'none'; }
+        function toggleModal(id, s) { document.getElementById(id).style.display = s ? 'flex' : 'none'; }
 
         window.onclick = (e) => { if(!e.target.closest('.search-container')) document.getElementById('history-box').style.display = 'none'; };
         window.onload = () => {
             renderLinks();
             if(localStorage.getItem('nexus_bg_custom')) document.body.style.backgroundImage = `url(${localStorage.getItem('nexus_bg_custom')})`;
+            const eng = localStorage.getItem('nexus_engine') || 'https://www.google.com/search';
+            document.getElementById('engine-select').value = eng; updateEngine(eng);
         };
     </script>
 </body>
