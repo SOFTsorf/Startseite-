@@ -7,9 +7,7 @@
     <meta name="theme-color" content="#050508">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-     <img src="https://lh3.googleusercontent.com/d/1AdC4w34gy3DUWdnocBj57TSzgRyXNafM" 
-     alt="Nexus Logo" 
-     style="width: 90%; max-width: 600px; height: auto; border-radius: 20px; display: block; margin: 20px auto;">
+    <title>NEXUS</title>
     
     <link rel="manifest" href="data:application/manifest+json,{'name':'Mehr von us','short_name':'Mehr von us','start_url':'.','display':'standalone','background_color':'#050508','theme_color':'#050508','icons':[{'src':'https://nexus-ashy.vercel.app/favicon.ico','sizes':'192x192','type':'image/png'}]}">
 
@@ -113,8 +111,11 @@
 <body>
 
     <div class="dashboard">
-        <h1>NEXUS</h1>
-        <button class="btn-primary" onclick="toggleNexus(true)">KI-Modus starten</button>
+         <img src="https://lh3.googleusercontent.com/d/1AdC4w34gy3DUWdnocBj57TSzgRyXNafM" 
+     alt="Nexus Logo" 
+     style="width: 90%; max-width: 600px; height: auto; border-radius: 20px; display: block; margin: 20px auto;">
+      
+  <button class="btn-primary" onclick="toggleNexus(true)">KI-Modus starten</button>
         
         <div class="search-container">
             <form id="search-form" action="https://www.google.com/search" method="GET" onsubmit="return handleSearchSubmit()">
@@ -131,7 +132,7 @@
         
         <div class="shortcuts-grid" id="shortcuts-container"></div>
         <div class="copyright-tag">(c) 2026 - by Patrick Roth</div>
-        <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:9px; letter-spacing:2px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
+        <button onclick="toggleModal('addModal', true)" style="margin-top:25px; background:none; border:none; color:#444; font-size:11px; letter-spacing:2px; cursor:pointer;">+ LINK HINZUFÜGEN</button>
     </div>
 
     <div id="warnModal" class="modal"><div class="modal-content"><h3>VERLAUF LÖSCHEN?</h3><button class="btn-primary" style="background:#ff4444; border:none; margin-top:20px;" onclick="clearHistory()">JA, LÖSCHEN</button><p onclick="toggleModal('warnModal', false)" style="margin-top:15px; color:gray; cursor:pointer;">ABBRECHEN</p></div></div>
